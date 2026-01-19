@@ -1870,108 +1870,20 @@
 
 </html> --}}
 
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+@extends('layouts.client-app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymWithin - Premium Fitness Equipment</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js"></script>
-    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}">
-</head>
-
-<body class="bg-black text-white overflow-x-hidden">
-
-    <!-- Premium Navigation -->
-    <nav class="glass-nav fixed top-0 left-0 right-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg"></div>
-                    <span class="text-xl font-bold tracking-tight">GymWithin</span>
-                </div>
-
-                <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
-                    <a href="#equipment" class="text-gray-300 hover:text-white transition-colors">Equipment</a>
-                    <a href="#benefits" class="text-gray-300 hover:text-white transition-colors">Benefits</a>
-                    <a href="#cta" class="text-gray-300 hover:text-white transition-colors">Get Started</a>
-                    <a href="#footer" class="text-gray-300 hover:text-white transition-colors">Contact</a>
-                </div>
-
-                <div class="flex items-center space-x-4">
-                    @auth
-                        <a href="{{ url('/dashboard') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                            Dashboard
-                        </a>
-                    @else
-                        {{-- class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent
-                        hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal" --}}
-                        <a href="{{ route('login') }}">
-                            <button
-                                class="hidden sm:block text-sm font-medium text-gray-300 hover:text-white transition-colors">
-
-                                Log in
-                            </button>
-                        </a>
-                        @if (Route::has('register'))
-                            {{-- class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a]
-                            border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm
-                            leading-normal" --}}
-                            <a href="{{ route('register') }}">
-                                <button
-                                    class="bg-white text-black px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-100 transition-all">
-                                    Register
-                                </button>
-                            </a>
-                        @endif
-                    @endauth
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section with Motion.dev Scroll Animation -->
+@section('content')
     <section class="hero-wrapper">
         <div class="hero-canvas">
-            <img id="heroImage" src="{{ asset('Treadmill_Images/treadmill_hero.webp') }}" alt="Premium Treadmill"
-                class="hero-image">
-
-            <!-- Gradient Overlays -->
-            <div
-                class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 pointer-events-none">
-            </div>
-            <div
-                class="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none">
-            </div>
-
-            <!-- Hero Content -->
+            <img id="heroImage" src="{{ asset('Treadmill_Images/treadmill_hero.webp') }}" alt="Hero" class="hero-image">
             <div class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center px-6 max-w-5xl">
-                    <h1
-                        class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[1.1]">
-                        <span class="block text-white">Redefine Your</span>
-                        <span class="block gradient-text mt-2">Fitness Standards</span>
+                    <h1 class="text-5xl md:text-8xl font-bold tracking-tight mb-6">
+                        <span class="block">Redefine Your</span>
+                        <span class="block gradient-text">Fitness Standards</span>
                     </h1>
-                    <p class="text-lg sm:text-xl text-gray-300 mb-10 max-w-2xl mx-auto font-light">
-                        Experience commercial-grade equipment designed for champions. Premium quality meets intelligent
-                        design.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <button
-                            class="magnetic-btn bg-gradient-to-r from-orange-500 to-orange-600 px-8 py-4 rounded-full font-semibold text-base w-full sm:w-auto">
-                            Explore Equipment
-                        </button>
-                        <button
-                            class="glass-card px-8 py-4 rounded-full font-semibold text-base hover:bg-white/10 transition-all w-full sm:w-auto">
-                            Watch Demo
-                        </button>
-                    </div>
                 </div>
             </div>
-
             <!-- Scroll Indicator -->
             <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2">
                 <span class="text-xs text-gray-400 uppercase tracking-widest">Scroll to explore</span>
@@ -1982,105 +1894,42 @@
         </div>
     </section>
 
-    <!-- Featured Equipment Section -->
     <section id="equipment" class="py-24 px-6 bg-black">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-16 fade-in" data-fade>
-                <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
-                    Premium <span class="gradient-text">Equipment</span>
-                </h2>
-                <p class="text-gray-400 text-lg max-w-2xl mx-auto font-light">
-                    Engineered for performance. Built to inspire greatness.
-                </p>
-            </div>
+        <div class="text-center mb-16 fade-in" data-fade>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
+                Premium <span class="gradient-text">Equipment</span>
+            </h2>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto font-light">
+                Engineered for performance. Built to inspire greatness.
+            </p>
+        </div>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            @php
+                $products = [
+                    ['name' => 'Pro Treadmill X1', 'price' => '$2,499', 'emoji' => '🏃', 'desc' => 'AI tracking.'],
+                    ['name' => 'PowerRack Elite', 'price' => '$1,899', 'emoji' => '💪', 'desc' => 'Steel build.'],
+                    ['name' => 'Spin Cycle Pro', 'price' => '$1,299', 'emoji' => '🚴', 'desc' => 'Magnetic res.']
+                ];
+            @endphp
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Product Card 1 -->
-                <div class="glass-card rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group fade-in"
-                    data-fade>
-                    <div
-                        class="aspect-square bg-gradient-to-br from-gray-900 to-black flex items-center justify-center relative overflow-hidden">
-                        <div class="text-8xl group-hover:scale-110 transition-transform duration-500">🏃</div>
-                        <div
-                            class="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                            FEATURED
-                        </div>
+            @foreach($products as $product)
+                <div class="glass-card rounded-3xl overflow-hidden group fade-in" data-fade>
+                    <div class="aspect-square flex items-center justify-center text-8xl">
+                        {{ $product['emoji'] }}
                     </div>
                     <div class="p-8">
-                        <h3 class="text-2xl font-bold mb-2 group-hover:text-orange-500 transition-colors">Pro Treadmill
-                            X1</h3>
-                        <p class="text-gray-400 mb-6 text-sm leading-relaxed">
-                            Advanced shock absorption with AI-powered performance tracking
-                        </p>
+                        <h3 class="text-2xl font-bold mb-2">{{ $product['name'] }}</h3>
+                        <p class="text-gray-400 mb-6">{{ $product['desc'] }}</p>
                         <div class="flex items-center justify-between">
-                            <div>
-                                <div class="text-3xl font-bold text-white">$2,499</div>
-                                <div class="text-xs text-gray-500">or $104/mo</div>
-                            </div>
-                            <button
-                                class="bg-white text-black px-6 py-3 rounded-full font-semibold text-sm hover:bg-gray-200 transition-all">
-                                Learn More
-                            </button>
+                            <span class="text-3xl font-bold">{{ $product['price'] }}</span>
+                            <button class="bg-white text-black px-6 py-2 rounded-full font-semibold">Learn More</button>
                         </div>
                     </div>
                 </div>
-
-                <!-- Product Card 2 -->
-                <div class="glass-card rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group fade-in"
-                    data-fade>
-                    <div
-                        class="aspect-square bg-gradient-to-br from-gray-900 to-black flex items-center justify-center relative overflow-hidden">
-                        <div class="text-8xl group-hover:scale-110 transition-transform duration-500">💪</div>
-                    </div>
-                    <div class="p-8">
-                        <h3 class="text-2xl font-bold mb-2 group-hover:text-orange-500 transition-colors">PowerRack
-                            Elite</h3>
-                        <p class="text-gray-400 mb-6 text-sm leading-relaxed">
-                            Commercial-grade steel construction with unlimited exercise versatility
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <div class="text-3xl font-bold text-white">$1,899</div>
-                                <div class="text-xs text-gray-500">or $79/mo</div>
-                            </div>
-                            <button
-                                class="bg-white text-black px-6 py-3 rounded-full font-semibold text-sm hover:bg-gray-200 transition-all">
-                                Learn More
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product Card 3 -->
-                <div class="glass-card rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group fade-in"
-                    data-fade>
-                    <div
-                        class="aspect-square bg-gradient-to-br from-gray-900 to-black flex items-center justify-center relative overflow-hidden">
-                        <div class="text-8xl group-hover:scale-110 transition-transform duration-500">🚴</div>
-                    </div>
-                    <div class="p-8">
-                        <h3 class="text-2xl font-bold mb-2 group-hover:text-orange-500 transition-colors">Spin Cycle Pro
-                        </h3>
-                        <p class="text-gray-400 mb-6 text-sm leading-relaxed">
-                            Studio-quality magnetic resistance with live performance metrics
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <div class="text-3xl font-bold text-white">$1,299</div>
-                                <div class="text-xs text-gray-500">or $54/mo</div>
-                            </div>
-                            <button
-                                class="bg-white text-black px-6 py-3 rounded-full font-semibold text-sm hover:bg-gray-200 transition-all">
-                                Learn More
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
     </section>
 
-    <!-- Benefits Section -->
     <section id="benefits" class="py-24 px-6 bg-gradient-to-b from-black to-gray-950">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 fade-in" data-fade>
@@ -2185,312 +2034,10 @@
         </div>
     </section>
 
-    <!-- Premium Footer -->
-    <footer id="footer" class="bg-black border-t border-white/10 py-16 px-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
-                <div class="lg:col-span-2">
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg"></div>
-                        <span class="text-xl font-bold">GymWithin</span>
-                    </div>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-6 max-w-xs">
-                        Transforming fitness through premium equipment and unwavering commitment to excellence.
-                    </p>
-                    <div class="flex space-x-4">
-                        <a href="#"
-                            class="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center transition-all border border-white/10">
-                            <span class="text-sm">📷</span>
-                        </a>
-                        <a href="#"
-                            class="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center transition-all border border-white/10">
-                            <span class="text-sm">f</span>
-                        </a>
-                        <a href="#"
-                            class="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center transition-all border border-white/10">
-                            <span class="text-sm">▶</span>
-                        </a>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold mb-4 text-sm uppercase tracking-wider text-gray-300">Products</h4>
-                    <ul class="space-y-3 text-sm">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Cardio
-                                Equipment</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Strength
-                                Training</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Accessories</a>
-                        </li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Bundles &
-                                Packages</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold mb-4 text-sm uppercase tracking-wider text-gray-300">Support</h4>
-                    <ul class="space-y-3 text-sm">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact Us</a>
-                        </li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Warranty
-                                Information</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Shipping &
-                                Delivery</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Returns &
-                                Exchanges</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold mb-4 text-sm uppercase tracking-wider text-gray-300">Company</h4>
-                    <ul class="space-y-3 text-sm">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About
-                                GymWithin</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Our Story</a>
-                        </li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Careers</a>
-                        </li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Press &
-                                Media</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-gray-500 text-sm">
-                    &copy; 2025 GymWithin, Inc. All rights reserved.
-                </p>
-                <div class="flex gap-6 text-sm">
-                    <a href="#" class="text-gray-500 hover:text-white transition-colors">Privacy Policy</a>
-                    <a href="#" class="text-gray-500 hover:text-white transition-colors">Terms of Service</a>
-                    <a href="#" class="text-gray-500 hover:text-white transition-colors">Cookie Settings</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
     <!-- Scroll to Top Button -->
     <button id="scrollToTop" class="scroll-to-top" aria-label="Scroll to top">
         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>
     </button>
-
-    <!-- Chatbot Widget -->
-    <div class="chatbot-widget">
-        <div id="chatbotWindow" class="chatbot-window">
-            <div class="chatbot-header">
-                <div>
-                    <h3 class="font-bold text-white">GymWithin Assistant</h3>
-                    <p class="text-xs text-white/80">Always here to help</p>
-                </div>
-                <button id="closeChatbot" class="text-white hover:text-white/80 transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <div id="chatbotMessages" class="chatbot-messages">
-                <div class="chatbot-message bot">
-                    👋 Hello! I'm your GymWithin assistant. How can I help you today?
-                </div>
-                <div class="chatbot-message bot">
-                    I can help you with:
-                    <br />• Product recommendations
-                    <br />• Pricing and financing
-                    <br />• Shipping information
-                    <br />• Technical support
-                </div>
-            </div>
-
-            <div class="chatbot-input-area">
-                <input type="text" id="chatbotInput" class="chatbot-input" placeholder="Type your message..."
-                    autocomplete="off">
-                <button id="chatbotSend" class="chatbot-send">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <button id="chatbotButton" class="chatbot-button">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-            </svg>
-        </button>
-    </div>
-
-    <!-- Motion.dev Scroll Animation Script -->
-    <script>
-        const {
-            scroll,
-            animate,
-            inView
-        } = Motion;
-
-        // Hero Image Scroll Animation with Motion.dev
-        const heroImage = document.getElementById('heroImage');
-        const heroWrapper = document.querySelector('.hero-wrapper');
-
-        scroll(
-            animate(heroImage, {
-                scale: [1, 1.3],
-                opacity: [1, 0.4],
-            }), {
-            target: heroWrapper,
-            offset: ['start start', 'end start']
-        }
-        );
-
-        // Smooth fade-in animations for content sections
-        const fadeElements = document.querySelectorAll('[data-fade]');
-
-        fadeElements.forEach((el, index) => {
-            inView(
-                el,
-                () => {
-                    animate(
-                        el, {
-                        opacity: [0, 1],
-                        y: [30, 0]
-                    }, {
-                        duration: 0.8,
-                        delay: index * 0.1,
-                        easing: [0.4, 0, 0.2, 1]
-                    }
-                    );
-                }, {
-                amount: 0.3
-            }
-            );
-        });
-
-        // Add magnetic effect to CTA buttons
-        const magneticBtns = document.querySelectorAll('.magnetic-btn');
-
-        magneticBtns.forEach(btn => {
-            btn.addEventListener('mouseenter', (e) => {
-                animate(
-                    btn, {
-                    scale: 1.05
-                }, {
-                    duration: 0.3,
-                    easing: [0.4, 0, 0.2, 1]
-                }
-                );
-            });
-
-            btn.addEventListener('mouseleave', (e) => {
-                animate(
-                    btn, {
-                    scale: 1
-                }, {
-                    duration: 0.3,
-                    easing: [0.4, 0, 0.2, 1]
-                }
-                );
-            });
-        });
-
-        // Scroll to Top Button
-        const scrollToTopBtn = document.getElementById('scrollToTop');
-
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 500) {
-                scrollToTopBtn.classList.add('visible');
-            } else {
-                scrollToTopBtn.classList.remove('visible');
-            }
-        });
-
-        scrollToTopBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // Chatbot Functionality
-        const chatbotButton = document.getElementById('chatbotButton');
-        const chatbotWindow = document.getElementById('chatbotWindow');
-        const closeChatbot = document.getElementById('closeChatbot');
-        const chatbotInput = document.getElementById('chatbotInput');
-        const chatbotSend = document.getElementById('chatbotSend');
-        const chatbotMessages = document.getElementById('chatbotMessages');
-
-        // Toggle chatbot window
-        chatbotButton.addEventListener('click', () => {
-            chatbotWindow.classList.toggle('active');
-            if (chatbotWindow.classList.contains('active')) {
-                chatbotInput.focus();
-            }
-        });
-
-        closeChatbot.addEventListener('click', () => {
-            chatbotWindow.classList.remove('active');
-        });
-
-        // Send message function
-        function sendMessage() {
-            const message = chatbotInput.value.trim();
-            if (!message) return;
-
-            // Add user message
-            const userMsg = document.createElement('div');
-            userMsg.className = 'chatbot-message user';
-            userMsg.textContent = message;
-            chatbotMessages.appendChild(userMsg);
-
-            // Clear input
-            chatbotInput.value = '';
-
-            // Scroll to bottom
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-
-            // Simulate bot response
-            setTimeout(() => {
-                const botMsg = document.createElement('div');
-                botMsg.className = 'chatbot-message bot';
-
-                // Simple response logic
-                const lowerMessage = message.toLowerCase();
-                if (lowerMessage.includes('price') || lowerMessage.includes('cost')) {
-                    botMsg.textContent =
-                        'Our equipment ranges from $1,299 to $2,499. We also offer flexible financing options starting at $54/month. Would you like to know more about a specific product?';
-                } else if (lowerMessage.includes('shipping') || lowerMessage.includes('delivery')) {
-                    botMsg.textContent =
-                        'We offer free white-glove delivery and installation on all equipment. Delivery typically takes 5-7 business days. Where are you located?';
-                } else if (lowerMessage.includes('warranty')) {
-                    botMsg.textContent =
-                        'All GymWithin equipment comes with a lifetime warranty on frames and a 5-year warranty on parts. We stand behind our quality!';
-                } else if (lowerMessage.includes('treadmill')) {
-                    botMsg.textContent =
-                        'Our Pro Treadmill X1 features advanced cushioning, smart tracking, and a powerful motor. It\'s perfect for serious runners. Would you like to schedule a demo?';
-                } else {
-                    botMsg.textContent =
-                        'Thanks for reaching out! Our team can help you with that. You can also call us at 1-800-GYM-WITHIN or email support@gymwithin.com. Is there anything specific I can help with?';
-                }
-
-                chatbotMessages.appendChild(botMsg);
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-            }, 800);
-        }
-
-        // Send on button click
-        chatbotSend.addEventListener('click', sendMessage);
-
-        // Send on Enter key
-        chatbotInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-    </script>
-</body>
-
-</html>
+@endsection
