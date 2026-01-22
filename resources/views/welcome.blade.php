@@ -7,18 +7,24 @@
             <div class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center px-6 max-w-5xl">
                     <h1 class="text-5xl md:text-8xl font-bold tracking-tight mb-6">
-                        <span class="block">Redefine Your</span>
-                        <span class="block gradient-text">Fitness Standards</span>
+                        <span id="heroTitle1" class="loading-shield block">Redefine Your</span>
+                        <span id="heroTitle2" class="loading-shield block gradient-text">Fitness Standards</span>
                     </h1>
+
+                    <div id="heroScroll"
+                        class="loading-shield absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2">
+                        <!-- Scroll Indicator -->
+                        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2">
+                            <span class="text-xs text-gray-400 uppercase tracking-widest">Scroll to explore</span>
+                            <div class="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-1">
+                                <div class="w-1.5 h-3 bg-white/60 rounded-full animate-bounce"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <!-- Scroll Indicator -->
-            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2">
-                <span class="text-xs text-gray-400 uppercase tracking-widest">Scroll to explore</span>
-                <div class="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-1">
-                    <div class="w-1.5 h-3 bg-white/60 rounded-full animate-bounce"></div>
-                </div>
-            </div>
+
+
         </div>
     </section>
 

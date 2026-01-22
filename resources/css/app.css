@@ -8,31 +8,34 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Re-assign Flux's gray of choice... */
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    
+    --color-zinc-50: var(--color-slate-50);
+    --color-zinc-100: var(--color-slate-100);
+    --color-zinc-200: var(--color-slate-200);
+    --color-zinc-300: var(--color-slate-300);
+    --color-zinc-400: var(--color-slate-400);
+    --color-zinc-500: var(--color-slate-500);
+    --color-zinc-600: var(--color-slate-600);
+    --color-zinc-700: var(--color-slate-700);
+    --color-zinc-800: var(--color-slate-800);
+    --color-zinc-900: var(--color-slate-900);
+    --color-zinc-950: var(--color-slate-950);
+}
 
-    --color-zinc-50: #fafafa;
-    --color-zinc-100: #f5f5f5;
-    --color-zinc-200: #e5e5e5;
-    --color-zinc-300: #d4d4d4;
-    --color-zinc-400: #a3a3a3;
-    --color-zinc-500: #737373;
-    --color-zinc-600: #525252;
-    --color-zinc-700: #404040;
-    --color-zinc-800: #262626;
-    --color-zinc-900: #171717;
-    --color-zinc-950: #0a0a0a;
-
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
+@theme {
+    --color-accent: var(--color-orange-500);
+    --color-accent-content: var(--color-orange-600);
     --color-accent-foreground: var(--color-white);
 }
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+        --color-accent: var(--color-orange-400);
+        --color-accent-content: var(--color-orange-400);
+        --color-accent-foreground: var(--color-orange-950);
     }
 }
 
@@ -45,6 +48,76 @@
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
     }
+}
+
+@layer components {
+
+    /* Create a distinct visual "cut" between the two sides */
+    .auth-split-divider {
+        @apply relative after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-linear-to-b after:from-transparent after:via-zinc-800 after:to-transparent;
+    }
+
+    /* Custom button interaction */
+    .btn-primary-modern {
+        @apply transition-all duration-200 ease-in-out hover:shadow-lg hover:shadow-orange-400 active:scale-95;
+    }
+
+    /* Form field smooth transition */
+    [data-flux-control] {
+        @apply transition-all duration-200 border-zinc-200 dark:border-zinc-800;
+    }
+
+    [data-flux-control]:focus {
+        @apply border-accent ring-4 ring-accent/10;
+    }
+}
+
+/* Custom Animation for the background glow */
+@keyframes pulse-slow {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+@layer utilities {
+    /* Glowing text effect for GymWithin */
+    .brand-glow {
+        text-shadow: 0 0 40px rgba(249, 116, 22, 0.7);
+    }
+
+    /* Custom Glow for the GymWithin text for better legibility */
+    .brand-glow-text {
+        text-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+    }
+
+    /* Prevents the cursor from interacting with the background glow div */
+    .pointer-events-none {
+        pointer-events: none;
+    }
+
+    /* Prevent content flickering before Alpine initializes */
+    [x-cloak] { 
+        display: none !important; 
+    }
+
+    /* Bolder shadow for the left-side panel to separate from branding */
+    .panel-separation-shadow {
+        box-shadow: 20px 0 50px -10px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* Add a smooth transition to the radial gradient movement */
+[x-data] div {
+    will-change: background;
+}
+
+/* Custom Animation for the background pulse */
+@keyframes soft-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.2; }
+    50% { transform: scale(1.1); opacity: 0.3; }
+}
+
+.animate-pulse-slow {
+    animation: soft-pulse 10s ease-in-out infinite;
 }
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {

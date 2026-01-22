@@ -11,6 +11,8 @@
         <div class="hidden md:flex items-center space-x-8">
             <a href="#equipment" class="hover:text-orange-500 transition-colors">Equipment</a>
             <a href="#benefits" class="hover:text-orange-500 transition-colors">Benefits</a>
+            <a href="#about" class="hover:text-orange-500 transition-colors">About Us</a>
+            <a href="#contact" class="hover:text-orange-500 transition-colors">Contat Us</a>
 
             <div class="flex items-center space-x-4 ml-4 border-l border-white/10 pl-8">
                 @auth

@@ -1,6 +1,50 @@
 // Motion.dev Scroll Animation Script
+// --- NEW: Page Load Entrance Animation ---
+const { scroll, animate, inView, stagger } = Motion;
 
-const { scroll, animate, inView } = Motion;
+// --- FIX: Zero-Flicker Entrance ---
+function playEntrance() {
+    if (typeof Motion === "undefined") {
+        // If Motion isn't ready yet, try again in a heartbeat
+        requestAnimationFrame(playEntrance);
+        return;
+    }
+
+    const { animate, stagger } = Motion;
+    const elements = document.querySelectorAll(".loading-shield");
+    
+    // 1. Remove the static "shield" and add the transition class
+    elements.forEach(el => {
+        el.classList.remove("loading-shield");
+        el.classList.add("hero-transition");
+    });
+
+    // 2. Trigger the Motion.dev sequence
+    animate(
+        ".hero-transition",
+        { opacity: [0, 1], y: [20, 0] },
+        { 
+            delay: stagger(0.15, { startDelay: 0.2 }), 
+            duration: 0.8,
+            easing: [0.22, 1, 0.36, 1] // Quintic ease-out for a premium feel
+        }
+    );
+}
+
+// Trigger on DOM Ready
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", playEntrance);
+} else {
+    playEntrance();
+}
+
+// Critical for Redirects: Handle the Back-Forward Cache
+window.addEventListener("pageshow", (event) => {
+    // If the user is coming from the login redirect or back button
+    if (event.persisted || performance.getEntriesByType("navigation")[0].type === 'back_forward') {
+        playEntrance();
+    }
+});
 
 // Hero Image Scroll Animation with Motion.dev
 const heroImage = document.getElementById("heroImage");

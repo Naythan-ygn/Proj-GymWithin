@@ -7,6 +7,28 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Pre-animation states */
+#heroTitle1, #heroTitle2, #heroScroll {
+    opacity: 0;
+    animation: fadeInPage 0.5s ease-in-out;
+    will-change: transform, opacity;
+}
+
+/* Initial state: hidden and slightly shifted down */
+.hero-entrance {
+    opacity: 0;
+    transform: translateY(20px);
+    will-change: transform, opacity;
+}
+
+/* Fallback: If JS fails to load, ensure text is eventually visible */
+@media (prefers-reduced-motion: no-preference) {
+    .no-js .hero-entrance {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Prevent horizontal scroll issues */
 html, body {
     overflow-x: hidden;
@@ -119,6 +141,10 @@ html, body {
     cursor: pointer;
     box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#closeChatbot {
+    cursor: pointer;
 }
 
 .chatbot-button:hover {
@@ -267,4 +293,9 @@ html, body {
         bottom: 20px;
         right: 20px;
     }
+}
+
+@keyframes fadeInPage {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
