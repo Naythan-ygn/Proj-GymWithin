@@ -23,12 +23,10 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </section>
 
-    <section id="equipment" class="py-24 px-6 bg-black">
+    <section id="equipment" class="x-6 bg-black">
         <div class="text-center mb-16 fade-in" data-fade>
             <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
                 Premium <span class="gradient-text">Equipment</span>
@@ -51,7 +49,7 @@
                     <div class="aspect-square flex items-center justify-center text-8xl">
                         {{ $product['emoji'] }}
                     </div>
-                    <div class="p-8">
+                    <div class="p-4">
                         <h3 class="text-2xl font-bold mb-2">{{ $product['name'] }}</h3>
                         <p class="text-gray-400 mb-6">{{ $product['desc'] }}</p>
                         <div class="flex items-center justify-between">

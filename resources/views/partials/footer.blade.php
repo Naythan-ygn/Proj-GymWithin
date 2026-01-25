@@ -119,7 +119,7 @@
 
         <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-gray-500 text-sm">
-                &copy; 2025 GymWithin, Inc. All rights reserved.
+                &copy; 2026 GymWithin, Inc. All rights reserved.
             </p>
             <div class="flex gap-6 text-sm">
                 <a href="#" class="text-gray-500 hover:text-white transition-colors">Privacy Policy</a>

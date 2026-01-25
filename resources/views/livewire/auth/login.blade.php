@@ -6,97 +6,6 @@
   >
     {{-- This is the left side --}}
     <div
-      x-show="show"
-      x-transition:enter="transition ease-out duration-1000 transform"
-      x-transition:enter-start="-translate-x-full opacity-0"
-      x-transition:enter-end="translate-x-0 opacity-100"
-      class="z-20 flex px-8 py-12 bg-zinc-50 border-r border-zinc-200 shadow-[20px_0_50px_rgba(0,0,0,0.5)] relative items-center justify-center dark:bg-zinc-900 dark:border-zinc-800 lg:px-16"
-    >
-      <div class="w-full max-w-sm space-y-8">
-        <div class="space-y-2">
-          <x-auth-header
-            :title="__('Welcome Back')"
-            :description="__('Enter your details to access GymWithin')"
-          />
-        </div>
-
-        <x-auth-session-status :status="session('status')" />
-
-        <form
-          method="POST"
-          action="{{ route("login.store") }}"
-          class="flex flex-col gap-6"
-          @submit="show = false"
-          wire:submit="login"
-        >
-          @csrf
-          
-          <flux:input
-            name="email"
-            :label="__('Email')"
-            type="email"
-            placeholder="Your Email"
-            required
-            autofocus
-          />
-
-          <div class="relative">
-            <flux:input
-              name="password"
-              :label="__('Password')"
-              type="password"
-              placeholder="Your Password"
-              required
-              viewable
-            />
-            @if (Route::has("password.request"))
-              <flux:link
-                class="text-xs font-semibold\ absolute top-0 end-0"
-                :href="route('password.request')"
-                variant="primary"
-                wire:navigate
-              >
-                {{ __("Forgot?") }}
-              </flux:link>
-            @endif
-          </div>
-          <flux:checkbox name="remember" :label="__('Remember me')" />
-          <flux:button variant="primary" type="submit" wire:loading.attr="disabled"
-            class="relative w-full h-12 hover:bg-orange-500 shadow-lg shadow-orange-950/20 active:scale-95 transition-all flex items-center justify-center overflow-hidden">
-            <span wire:loading.remove wire:target="login">
-              {{ __('Log in') }}
-            </span>
-          
-            <span wire:loading wire:target="login" class="flex items-center gap-2">
-              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
-              </svg>
-              <span>{{ __('Authenticating...') }}</span>
-            </span>
-          </flux:button>
-        </form>
-
-        @if (Route::has("register"))
-          <div class="text-center text-sm text-zinc-500 dark:text-zinc-400">
-            {{ __('Don\'t have an account?') }}
-            <flux:link
-              :href="route('register')"
-              class="font-semibold"
-              wire:navigate
-              variant="primary"
-            >
-              {{ __("Join now") }}
-            </flux:link>
-          </div>
-        @endif
-      </div>
-    </div>
-
-    {{-- This is the Right side --}}
-    <div
       x-data="{ x: 0, y: 0 }"
       @mousemove="x = $event.clientX - $el.getBoundingClientRect().left; y = $event.clientY - $el.getBoundingClientRect().top"
       class="hidden flex-col overflow-hidden bg-zinc-950 relative items-center justify-center lg:flex"
@@ -189,5 +98,141 @@
         </div>
       </div>
     </div>
-  </div>
+
+    {{-- This is the Right side --}}
+    <div
+      x-show="show"
+      x-transition:enter="transition ease-out duration-1000 transform"
+      x-transition:enter-start="-translate-x-full opacity-0"
+      x-transition:enter-end="translate-x-0 opacity-100"
+      class="z-20 flex px-8 py-12 bg-zinc-50 border-r border-zinc-200 shadow-[20px_0_50px_rgba(0,0,0,0.5)] relative items-center justify-center dark:bg-zinc-900 dark:border-zinc-800 lg:px-16"
+    >
+      {{-- Back to Home Arrow --}}
+      <a
+        href="{{ route("home") }}"
+        wire:navigate
+        class="text-zinc-400 transition-colors absolute top-6 left-6 hover:text-orange-500 dark:text-zinc-600 dark:hover:text-orange-500"
+        title="{{ __("Back to Home") }}"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          />
+        </svg>
+      </a>
+
+      <div class="w-full max-w-sm space-y-8">
+        <div class="space-y-2">
+          <x-auth-header
+            :title="__('Welcome Back')"
+            :description="__('Enter your details to access GymWithin')"
+          />
+        </div>
+
+        <x-auth-session-status :status="session('status')" />
+
+        <form
+          method="POST"
+          action="{{ route("login.store") }}"
+          class="flex flex-col gap-6"
+          @submit="show = false"
+          wire:submit="login"
+        >
+          @csrf
+
+          <flux:input
+            name="email"
+            :label="__('Email')"
+            type="email"
+            placeholder="Your Email"
+            required
+            autofocus
+          />
+
+          <div class="relative">
+            <flux:input
+              name="password"
+              :label="__('Password')"
+              type="password"
+              placeholder="Your Password"
+              required
+              viewable
+            />
+            @if (Route::has("password.request"))
+              <flux:link
+                class="text-xs font-semibold\ absolute top-0 end-0"
+                :href="route('password.request')"
+                variant="primary"
+                wire:navigate
+              >
+                {{ __("Forgot?") }}
+              </flux:link>
+            @endif
+          </div>
+          <flux:checkbox name="remember" :label="__('Remember me')" />
+          <flux:button
+            variant="primary"
+            type="submit"
+            wire:loading.attr="disabled"
+            class="flex overflow-hidden w-full h-12 shadow-lg shadow-orange-950/20 transition-all relative hover:bg-orange-500 active:scale-95 items-center justify-center"
+          >
+            <span wire:loading.remove wire:target="login">
+              {{ __("Log in") }}
+            </span>
+
+            <span
+              wire:loading
+              wire:target="login"
+              class="flex items-center gap-2"
+            >
+              <svg
+                class="h-5 w-5 text-white animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <span>{{ __("Authenticating...") }}</span>
+            </span>
+          </flux:button>
+        </form>
+
+        @if (Route::has("register"))
+          <div class="text-center text-sm text-zinc-500 dark:text-zinc-400">
+            {{ __('Don\'t have an account?') }}
+            <flux:link
+              :href="route('register')"
+              class="font-semibold"
+              wire:navigate
+              variant="primary"
+            >
+              {{ __("Join now") }}
+            </flux:link>
+          </div>
+        @endif
+      </div>
+    </div>
+  </div>    
 </x-layouts::auth>

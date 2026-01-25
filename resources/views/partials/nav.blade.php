@@ -45,6 +45,8 @@
         <div class="px-6 py-6 space-y-4 flex flex-col">
             <a href="#equipment" @click="mobileMenuOpen = false" class="text-lg py-2">Equipment</a>
             <a href="#benefits" @click="mobileMenuOpen = false" class="text-lg py-2">Benefits</a>
+            <a href="#about" @click="mobileMenuOpen = false" class="text-lg py-2">About Us</a>
+            <a href="#contact" @click="mobileMenuOpen = false" class="text-lg py-2">Contact Us</a>
             <hr class="border-white/10">
             @auth
                 <a href="{{ url('/dashboard') }}" class="text-lg py-2">Dashboard</a>
