@@ -12,7 +12,7 @@
             <a href="#equipment" class="hover:text-orange-500 transition-colors">Equipment</a>
             <a href="#benefits" class="hover:text-orange-500 transition-colors">Benefits</a>
             <a href="#about" class="hover:text-orange-500 transition-colors">About Us</a>
-            <a href="#contact" class="hover:text-orange-500 transition-colors">Contat Us</a>
+            <a href="{{ url('/contact') }}" class="hover:text-orange-500 transition-colors">Contat Us</a>
 
             <div class="flex items-center space-x-4 ml-4 border-l border-white/10 pl-8">
                 @auth
@@ -46,7 +46,7 @@
             <a href="#equipment" @click="mobileMenuOpen = false" class="text-lg py-2">Equipment</a>
             <a href="#benefits" @click="mobileMenuOpen = false" class="text-lg py-2">Benefits</a>
             <a href="#about" @click="mobileMenuOpen = false" class="text-lg py-2">About Us</a>
-            <a href="#contact" @click="mobileMenuOpen = false" class="text-lg py-2">Contact Us</a>
+            <a href="{{ url('/contact') }}" @click="mobileMenuOpen = false" class="text-lg py-2">Contact Us</a>
             <hr class="border-white/10">
             @auth
                 <a href="{{ url('/dashboard') }}" class="text-lg py-2">Dashboard</a>
