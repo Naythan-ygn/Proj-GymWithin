@@ -9,9 +9,11 @@
     <div class="min-h-screen bg-[#111111] text-white font-sans">
 
         <section class="hero-background relative h-[40vh] flex items-center px-10 md:px-20">
-            <div class="z-10 max-w-2xl">
-                <h1 class="text-5xl md:text-6xl font-bold mb-4 tracking-tight">Get in Touch</h1>
-                <p class="text-lg md:text-xl text-gray-300">We're here to help you achieve your fitness goals.</p>
+            <div class="container mx-auto px-6 z-10">
+                <div class="max-w-2xl loading-shield">
+                    <h1 class="text-5xl md:text-6xl font-black font-bold mb-4 leading-tight">Get in Touch</h1>
+                    <p class="text-lg md:text-xl text-gray-300">We're here to help you achieve your fitness goals.</p>
+                </div>
             </div>
             <div class="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent"></div>
         </section>
@@ -25,11 +27,11 @@
                     <div class="space-y-6">
                         <div class="flex items-start gap-4">
                             <span class="text-orange-500 mt-1 text-xl"><i class="fas fa-map-marker-alt"></i></span>
-                            <p class="text-gray-300">GymWithin HQ, 123 Fitness Ave, New York, NY 10001</p>
+                            <p class="text-gray-300">GymWithin HQ, MM, Dhammazedi Road, Yangon, Myanmar (Burma)</p>
                         </div>
                         <div class="flex items-center gap-4">
                             <span class="text-orange-500 text-xl"><i class="fas fa-phone-alt"></i></span>
-                            <p class="text-gray-300">+1 (555) 123-4567</p>
+                            <p class="text-gray-300">(+95) 988-821-8097</p>
                         </div>
                         <div class="flex items-center gap-4">
                             <span class="text-orange-500 text-xl"><i class="fas fa-envelope"></i></span>
@@ -73,6 +75,5 @@
 
             </div>
         </section>
-        
     </div>
 @endsection

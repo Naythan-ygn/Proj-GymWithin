@@ -12,9 +12,9 @@ function playEntrance() {
 
     const { animate, stagger } = Motion;
     const elements = document.querySelectorAll(".loading-shield");
-    
+
     // 1. Remove the static "shield" and add the transition class
-    elements.forEach(el => {
+    elements.forEach((el) => {
         el.classList.remove("loading-shield");
         el.classList.add("hero-transition");
     });
@@ -23,11 +23,11 @@ function playEntrance() {
     animate(
         ".hero-transition",
         { opacity: [0, 1], y: [20, 0] },
-        { 
-            delay: stagger(0.15, { startDelay: 0.2 }), 
+        {
+            delay: stagger(0.15, { startDelay: 0.2 }),
             duration: 0.8,
-            easing: [0.22, 1, 0.36, 1] // Quintic ease-out for a premium feel
-        }
+            easing: [0.22, 1, 0.36, 1], // Quintic ease-out for a premium feel
+        },
     );
 }
 
@@ -41,7 +41,10 @@ if (document.readyState === "loading") {
 // Critical for Redirects: Handle the Back-Forward Cache
 window.addEventListener("pageshow", (event) => {
     // If the user is coming from the login redirect or back button
-    if (event.persisted || performance.getEntriesByType("navigation")[0].type === 'back_forward') {
+    if (
+        event.persisted ||
+        performance.getEntriesByType("navigation")[0].type === "back_forward"
+    ) {
         playEntrance();
     }
 });
@@ -50,16 +53,18 @@ window.addEventListener("pageshow", (event) => {
 const heroImage = document.getElementById("heroImage");
 const heroWrapper = document.querySelector(".hero-wrapper");
 
-scroll(
-    animate(heroImage, {
-        scale: [1, 1.3],
-        opacity: [1, 0.4],
-    }),
-    {
-        target: heroWrapper,
-        offset: ["start start", "end start"],
-    },
-);
+if (heroImage && heroWrapper) {
+    scroll(
+        animate(heroImage, {
+            scale: [1, 1.3],
+            opacity: [1, 0.4],
+        }),
+        {
+            target: heroWrapper,
+            offset: ["start start", "end start"],
+        },
+    );
+}
 
 // Smooth fade-in animations for content sections
 const fadeElements = document.querySelectorAll("[data-fade]");
@@ -89,34 +94,35 @@ fadeElements.forEach((el, index) => {
 
 // Add magnetic effect to CTA buttons
 const magneticBtns = document.querySelectorAll(".magnetic-btn");
+if (magneticBtns.length > 0) {
+    magneticBtns.forEach((btn) => {
+        btn.addEventListener("mouseenter", (e) => {
+            animate(
+                btn,
+                {
+                    scale: 1.05,
+                },
+                {
+                    duration: 0.3,
+                    easing: [0.4, 0, 0.2, 1],
+                },
+            );
+        });
 
-magneticBtns.forEach((btn) => {
-    btn.addEventListener("mouseenter", (e) => {
-        animate(
-            btn,
-            {
-                scale: 1.05,
-            },
-            {
-                duration: 0.3,
-                easing: [0.4, 0, 0.2, 1],
-            },
-        );
+        btn.addEventListener("mouseleave", (e) => {
+            animate(
+                btn,
+                {
+                    scale: 1,
+                },
+                {
+                    duration: 0.3,
+                    easing: [0.4, 0, 0.2, 1],
+                },
+            );
+        });
     });
-
-    btn.addEventListener("mouseleave", (e) => {
-        animate(
-            btn,
-            {
-                scale: 1,
-            },
-            {
-                duration: 0.3,
-                easing: [0.4, 0, 0.2, 1],
-            },
-        );
-    });
-});
+}
 
 // Scroll to Top Button
 const scrollToTopBtn = document.getElementById("scrollToTop");
