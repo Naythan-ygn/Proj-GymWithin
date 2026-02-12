@@ -51,7 +51,7 @@ window.addEventListener("pageshow", (event) => {
 
 // Hero Image Scroll Animation with Motion.dev
 const heroImage = document.getElementById("heroImage");
-const heroWrapper = document.querySelector(".hero-wrapper");
+const heroWrapper = document.querySelector(".benefits-hero-custom");
 
 if (heroImage && heroWrapper) {
     scroll(

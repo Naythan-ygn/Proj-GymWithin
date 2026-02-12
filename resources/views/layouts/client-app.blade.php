@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'GymWithin - Premium Fitness')</title>
+    <link rel="icon" type="image/png" href="{{ asset('Treadmill_Images/logo.png') }}">
     @vite('resources/css/app.css')
     <script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>

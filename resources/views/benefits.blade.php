@@ -9,30 +9,29 @@
 
 @section('content')
     {{-- HERO SECTION --}}
-    {{-- We reuse hero-wrapper and #heroImage so animation.js picks it up --}}
-    <section class="hero-wrapper relative h-screen w-full overflow-hidden">
-        {{-- Background Image with Parallax ID --}}
-        <div id="heroImage" class="hero-image absolute inset-0"
-            style="background-image: url('{{ asset('Treadmill_Images/Benefits_bg.png') }}'); background-size: cover; background-position: center;">
-        </div>
-        {{-- Dark Overlay --}}
-        <div class="absolute inset-0 bg-black/60"></div>
+    <section class="benefits-hero-custom relative w-full overflow-hidden">
+        {{-- 
+         We keep this div with the ID for animation.js parallax effect.
+         It now inherits the background image and gradient from the CSS.
+    --}}
+        <div id="heroImage" class="hero-image"></div>
 
         {{-- Hero Content --}}
-        <div
-            class="relative z-10 container mx-auto h-full flex flex-col justify-center px-6 lg:px-16 hero-transition loading-shield">
-            <h1 class="text-5xl lg:text-7xl font-black text-white mb-6 leading-tight">
-                Unlock Your <br>
-                <span class="gradient-text">Full Potential</span>
-            </h1>
-            <p class="text-xl text-gray-300 mb-10 max-w-2xl">
-                Experience the transformative advantages of a GymWithin membership.
-            </p>
-            <div>
-                <a href="#"
-                    class="magnetic-btn inline-block py-4 px-12 rounded-full bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white font-bold text-lg">
-                    Meet The Team
-                </a>
+        <div class="relative z-10 container mx-auto px-6 lg:px-16 hero-transition loading-shield">
+            <div class="max-w-3xl">
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-4 leading-tight">
+                    Unlock Your <br>
+                    <span class="gradient-text">Full Potential</span>
+                </h1>
+                <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-xl">
+                    Experience the transformative advantages of a GymWithin membership.
+                </p>
+                <div>
+                    <a href="#"
+                        class="magnetic-btn inline-block py-3 px-10 rounded-full bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white font-bold text-lg">
+                        Meet The Team
+                    </a>
+                </div>
             </div>
         </div>
     </section>

@@ -9,7 +9,7 @@
         </div>
 
         <div class="hidden md:flex items-center space-x-8">
-            <a href="#equipment" class="hover:text-orange-500 transition-colors">Equipment</a>
+            <a href="{{ url('/equipment') }}" class="hover:text-orange-500 transition-colors">Equipment</a>
             <a href="{{ url('/benefits') }}" class="hover:text-orange-500 transition-colors">Benefits</a>
             <a href="{{ url('/about') }}" class="hover:text-orange-500 transition-colors">About Us</a>
             <a href="{{ url('/contact') }}" class="hover:text-orange-500 transition-colors">Contat Us</a>
@@ -43,7 +43,7 @@
         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 -translate-y-4" class="md:hidden glass-nav border-t border-white/10">
         <div class="px-6 py-6 space-y-4 flex flex-col">
-            <a href="#equipment" @click="mobileMenuOpen = false" class="text-lg py-2">Equipment</a>
+            <a href="{{ url('/equipment') }}" @click="mobileMenuOpen = false" class="text-lg py-2">Equipment</a>
             <a href="{{ url('/benefits') }}" @click="mobileMenuOpen = false" class="text-lg py-2">Benefits</a>
             <a href="{{ url('/about') }}" @click="mobileMenuOpen = false" class="text-lg py-2">About Us</a>
             <a href="{{ url('/contact') }}" @click="mobileMenuOpen = false" class="text-lg py-2">Contact Us</a>

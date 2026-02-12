@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\EquipmentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+Route::get('/equipment', [EquipmentController::class, 'index'])->name('equipment');
 
 Route::get('/benefits', function () {
     return view('benefits');
@@ -16,10 +19,10 @@ Route::get('/about', function () {
 
 Route::get('/contact', function () {
     return view('contact-us');
-});
+})->name('contact');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

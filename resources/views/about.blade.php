@@ -11,7 +11,9 @@
                     Building a Stronger Community, Together. We started with a simple vision: to make elite fitness
                     accessible to everyone.
                 </p>
-                <a href="#team" class="btn-orange">Meet The Team</a>
+                <a href="#team"
+                    class="magnetic-btn inline-block py-3 px-10 rounded-full bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white font-bold text-lg">Meet
+                    The Team</a>
             </div>
         </div>
     </section>
@@ -33,8 +35,7 @@
                 </div>
 
                 <div class="md:w-1/2 about-image-container loading-shield">
-                    <img src="{{ asset('Treadmill_Images/about_us_profile.jpg') }}"
-                        alt="Our Community in Action">
+                    <img src="{{ asset('Treadmill_Images/about_us_profile.jpg') }}" alt="Our Community in Action">
                 </div>
             </div>
         </div>

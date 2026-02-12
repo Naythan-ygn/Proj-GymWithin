@@ -251,6 +251,7 @@ body {
 .chatbot-send:hover {
     transform: scale(1.1);
 }
+
 /* Custom Input Styling to match the glowing orange border */
 .contact-input {
     width: 100%;
@@ -264,17 +265,18 @@ body {
 }
 
 .contact-input:focus {
-    border-color: #f3863c; /* Match orange theme */
+    border-color: #f3863c;
+    /* Match orange theme */
 }
 
 /* Contact Us Page */
 .hero-background {
-    background-image: url("../Treadmill_Images/contact_bg.png");
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.8) 20%, rgba(0, 0, 0, 0.3) 100%), url("../Treadmill_Images/contact_bg.png");
     background-size: cover;
     background-position: center 20%;
     background-repeat: no-repeat;
 
-    min-height: 100vh;
+    min-height: 60vh;
     width: 100%;
 
     display: flex;
@@ -284,16 +286,208 @@ body {
 }
 
 .hero-overlay {
-    background: rgba(0, 0, 0, 0.3); /* Slight dark tint */
     width: 100%;
     height: 100%;
     flex-grow: 1;
 }
 
+/* This is the Equipment Page Start */
+
+/* Hero Section with Background Image */
+.equipment-hero {
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.8) 20%, rgba(0, 0, 0, 0.1) 100%),
+        url('../Treadmill_Images/equipment_bg.jpg');
+    background-size: cover;
+    background-position: center center;
+    height: 60vh;
+    /* Adjust height as needed to match reference */
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+}
+
+/* Main Content Layout (Sidebar + Grid) */
+.equipment-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+/* Left Sidebar (Filters) */
+.sidebar-filters {
+    flex: 0 0 250px;
+    /* Fixed width for sidebar */
+    padding-right: 1rem;
+}
+
+.filter-group h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.filter-list li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #333;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.filter-list li:hover {
+    color: #ff6b35;
+}
+
+.filter-icon {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    color: #ff6b35;
+}
+
+/* Right Side - Equipment Grid */
+.equipment-grid-section {
+    flex: 1;
+}
+
+.grid-container {
+    display: grid;
+    /* 4 columns on large screens, auto-adjusts smaller */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+/* Product Card Styling */
+.product-card {
+    background-color: #1a1a1a;
+    border-radius: 1rem;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #333;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    border-color: #ff6b35;
+}
+
+.product-image-wrapper {
+    height: 200px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, #333 0%, #1a1a1a 70%);
+}
+
+.product-image-wrapper img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+/* Price Badge (e.g., $1,899) */
+.price-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: #ff6b35;
+    color: white;
+    font-weight: bold;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    z-index: 2;
+}
+
+.product-details {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.product-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.view-details-btn {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border: 1px solid #444;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    color: #ccc;
+    transition: all 0.3s ease;
+}
+
+.product-card:hover .view-details-btn {
+    background-color: #ff6b35;
+    border-color: #ff6b35;
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .equipment-container {
+        flex-direction: column;
+    }
+
+    .sidebar-filters {
+        flex: none;
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+
+    .grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+}
+
+/* This is the end of the Equipment Page */
+
 /* This is the benefits page start */
-/* The dark cards in the features section */
+/* Updated in welcome.css */
+.benefits-hero-custom {
+    width: 100%;
+    height: 60vh;
+    min-height: 500px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    /* Apply the requested gradient overlay as a layer above the image */
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 20%, rgba(0, 0, 0, 0.1) 100%),
+        url('/Treadmill_Images/Benefits_bg.png');
+    background-size: cover;
+    background-position: center 25%;
+}
+
+/* Ensure the image container for parallax still works if using JS */
+.benefits-hero-custom .hero-image {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    /* Place behind the gradient and text */
+    background: inherit;
+    /* Inherit the background from parent for parallax script */
+}
+
 .feature-card {
-    background-color: #121212; /* Slightly lighter than main bg */
+    background-color: #121212;
+    /* Slightly lighter than main bg */
     border: 1px solid #2a2a2a;
     border-radius: 1.5rem;
     padding: 2.5rem 2rem;
@@ -302,7 +496,8 @@ body {
 }
 
 .feature-card:hover {
-    border-color: #ff6b35; /* Orange border on hover */
+    border-color: #ff6b35;
+    /* Orange border on hover */
     transform: translateY(-5px);
     box-shadow: 0 10px 30px -10px rgba(255, 107, 53, 0.2);
 }
@@ -347,6 +542,7 @@ body {
     border-radius: 1rem;
     width: 100%;
 }
+
 /* This is the benefits page end  */
 
 /* Custom Filter for a "Dark Mode" Map effect without a paid API key */
@@ -384,12 +580,12 @@ iframe.grayscale {
 
 .about-hero {
     position: relative;
-    height: 100vh;
+    height: 60vh;
     width: 100%;
     display: flex;
     align-items: center;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0.2) 100%),
-                url('/Treadmill_Images/about_bg.png'); /* Paths are relative to the public folder */
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 20%, rgba(0, 0, 0, 0.3) 100%),
+        url('/Treadmill_Images/About_bg.png');
     background-size: cover;
     background-position: center;
 }
@@ -416,10 +612,11 @@ iframe.grayscale {
 
 .about-image-container img {
     border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     width: 100%;
     object-fit: cover;
 }
+
 /* This is the end of the about us page */
 
 /* Responsive Hero Adjustments */
@@ -436,9 +633,11 @@ iframe.grayscale {
         font-size: 2.5rem !important;
         line-height: 1.2;
     }
+
     h2 {
         font-size: 2rem !important;
     }
+
     .text-xl {
         font-size: 1.125rem;
     }
@@ -448,7 +647,8 @@ iframe.grayscale {
     .chatbot-window {
         width: calc(100vw - 40px);
         height: 450px;
-        right: 0px; /* Align to edge on very small screens */
+        right: 0px;
+        /* Align to edge on very small screens */
     }
 
     .chatbot-widget {
@@ -461,6 +661,7 @@ iframe.grayscale {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
