@@ -21,7 +21,7 @@ Route::get('/contact', function () {
     return view('contact-us');
 })->name('contact');
 
-Route::view('dashboard', 'dashboard')
+Route::view('dashboard', 'admin.dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
