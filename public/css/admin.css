@@ -78,3 +78,14 @@ thead tr {
     background: rgba(35, 35, 42, 0.95) !important;
     border: 1px solid rgba(63, 63, 70, 0.8) !important;
 }
+
+/* Drawer Specific Glass */
+[flux-modal][variant="drawer"] .glass-modal-content {
+    border-radius: 2rem 0 0 2rem !important;
+    height: 100vh;
+    border-right: none !important;
+}
+
+.dark [flux-modal][variant="drawer"] .glass-modal-content {
+    background: rgba(24, 24, 27, 0.98) !important; /* Zinc-900 deeper for focus */
+}

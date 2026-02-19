@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'GymWithin - Premium Fitness')</title>
-                
+    <link rel="icon" type="image/png" href="{{ asset('Treadmill_Images/logo.png') }}">
+
     @vite('resources/css/app.css')
     <script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -44,14 +45,14 @@
 
     @include('partials.footer')
     @include('partials.chatbot')
-    
+
     <!-- Scroll to Top Button -->
     <button id="scrollToTop" class="scroll-to-top" aria-label="Scroll to top">
         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>
     </button>
-    
+
     @if (Route::has('login'))
         <div class="h-14.5 hidden lg:block"></div>
     @endif

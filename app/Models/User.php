@@ -23,7 +23,45 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'last_login_at',
+        'status'
     ];
+
+    protected $casts = [
+        'last_login_at' => 'datetime',
+    ];
+
+    // This ensures "status" always has a value even if null in DB
+    public function getStatusAttribute($value)
+    {
+        return $value ?? 'active';
+    }
+
+    // Logic to check for the 30-day inactivity you mentioned
+    public function checkInactivity()
+    {
+        if (in_array($this->role, ['admin', 'guest']))
+            return;
+
+        if ($this->last_login_at && $this->last_login_at->diffInDays(now()) > 30) {
+            $this->update(['status' => 'inactive']);
+        }
+    }
+
+    public function updateStatus()
+    {
+        // Admin and Guest roles are immune to auto-inactivity
+        if (in_array($this->role, ['admin', 'guest'])) {
+            return;
+        }
+
+        // If last login was more than 30 days ago, set to inactive
+        if ($this->last_login_at && $this->last_login_at->diffInDays(now()) > 30) {
+            $this->status = 'inactive';
+            $this->save();
+        }
+    }
 
     /**
      * The attributes that should be hidden for serialization.

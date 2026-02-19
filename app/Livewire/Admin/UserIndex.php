@@ -13,6 +13,14 @@ class UserIndex extends Component
     public $search = '';
     public ?User $userToDelete = null; // Track user for the modal
 
+    public ?User $selectedUser = null; // Current User
+
+    public function showPreview(User $user)
+    {
+        $this->selectedUser = $user;
+        $this->dispatch('modal-show', name: 'user-preview-drawer');
+    }
+
     public function confirmDelete(User $user)
     {
         $this->userToDelete = $user;
