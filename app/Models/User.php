@@ -51,8 +51,8 @@ class User extends Authenticatable
 
     public function updateStatus()
     {
-        // Admin and Guest roles are immune to auto-inactivity
-        if (in_array($this->role, ['admin', 'guest'])) {
+        // Admin roles are immune to auto-inactivity
+        if (in_array($this->role, ['admin'])) {
             return;
         }
 
@@ -61,6 +61,16 @@ class User extends Authenticatable
             $this->status = 'inactive';
             $this->save();
         }
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isMember(): bool
+    {
+        return $this->role === 'user';
     }
 
     /**

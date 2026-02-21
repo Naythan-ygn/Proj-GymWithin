@@ -29,19 +29,15 @@
 
         <flux:spacer />
 
-        <flux:sidebar.nav>
-            <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit"
-                target="_blank">
-                {{ __('Repository') }}
-            </flux:sidebar.item>
-
-            <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire"
-                target="_blank">
-                {{ __('Documentation') }}
-            </flux:sidebar.item>
-        </flux:sidebar.nav>
-
         <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
+
+        <div class="px-6 space-y-4">
+            <div
+                class="text-[10px] uppercase tracking-widest text-zinc-500/50 font-medium border-t border-zinc-200/50 dark:border-zinc-700/50 pt-4">
+                &copy; 2026 GymWithin. <br> All rights reserved.
+            </div>
+        </div>
+
     </flux:sidebar>
 
     <!-- Mobile User Menu -->

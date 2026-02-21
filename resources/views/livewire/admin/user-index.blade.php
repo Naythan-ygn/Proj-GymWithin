@@ -65,8 +65,10 @@
 
                             {{-- Clean Role Column --}}
                             <td class="px-6 py-4">
-                                <flux:badge size="sm" color="zinc" class="uppercase font-bold tracking-tighter">
-                                    {{ $user->role ?? 'User' }}
+                                {{-- Displaying only actual account levels --}}
+                                <flux:badge size="sm" :color="$user->role === 'admin' ? 'orange' : 'zinc'"
+                                    class="uppercase font-bold tracking-tighter">
+                                    {{ $user->role === 'admin' ? 'Admin' : 'User' }}
                                 </flux:badge>
                             </td>
 
