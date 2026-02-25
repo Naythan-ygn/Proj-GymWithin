@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\ProfileController;
+use App\Livewire\Admin\ProductForm;
+use App\Livewire\Admin\ProductIndex;
 use App\Livewire\Admin\UserForm;
 use App\Livewire\Admin\UserIndex;
 use Illuminate\Support\Facades\Route;
@@ -48,10 +50,22 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->name('dashboard');
 
     // User Management CRUD
+// User Management CRUD
     Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/users', UserIndex::class)->name('users.index');
-        Route::get('/users/create', UserForm::class)->name('users.create');
-        Route::get('/users/{user}/edit', UserForm::class)->name('users.edit');
+
+        // Fix: Added the dot after 'products' in the name
+        Route::prefix('/products')->name('products.')->group(function () {
+            Route::get('/', ProductIndex::class)->name('index'); // Now admin.products.index
+            Route::get('/create', ProductForm::class)->name('create');
+            Route::get('/{product}/edit', ProductForm::class)->name('edit');
+        });
+
+        Route::prefix('/users')->name('users.')->group(function () {
+            Route::get('/', UserIndex::class)->name('index');
+            Route::get('/create', UserForm::class)->name('create');
+            Route::get('/{user}/edit', UserForm::class)->name('edit');
+        });
     });
 });
+
 require __DIR__ . '/settings.php';

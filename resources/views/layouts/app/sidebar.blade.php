@@ -19,6 +19,11 @@
                     wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:sidebar.item>
+                
+                <flux:sidebar.item icon="shopping-bag" :href="route('admin.products.index')"
+                    :current="request()->routeIs('admin.products.*')" wire:navigate>
+                    {{ __('Inventory') }}
+                </flux:sidebar.item>
 
                 <flux:sidebar.item icon="users" :href="route('admin.users.index')"
                     :current="request()->routeIs('admin.users.*')" wire:navigate>
