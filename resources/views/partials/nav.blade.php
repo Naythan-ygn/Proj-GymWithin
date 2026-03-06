@@ -1,5 +1,4 @@
-<nav x-data="{ mobileMenuOpen: false }"
-    class="dark glass-panel fixed top-0 left-0 right-0 z-50 border-b border-white/10 shadow-2xl"
+<nav x-data="{ mobileMenuOpen: false }" class="dark glass-panel fixed top-0 left-0 right-0 z-50 border-b border-white/10 shadow-2xl"
     style="background: rgba(24, 24, 27, 0.85); border-color: rgba(63, 63, 70, 0.4);">
 
     <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
@@ -26,13 +25,14 @@
             <div class="flex items-center space-x-4 ml-4 border-l border-white/10 pl-8">
                 @auth
                     {{-- Role-Based Dashboard Access --}}
-                    @if(auth()->user()->role === 'admin')
+                    @if (auth()->user()->role === 'admin')
                         <a href="{{ route('admin.users.index') }}"
                             class="text-orange-400 hover:text-orange-300 font-semibold transition-colors">
                             Manage Members
                         </a>
                     @else
-                        <a href="{{ route('user.settings') }}" class="text-zinc-100 hover:text-white font-semibold transition-colors">
+                        <a href="{{ route('user.settings') }}"
+                            class="text-zinc-100 hover:text-white font-semibold transition-colors">
                             {{ auth()->user()->name }}
                         </a>
                     @endif
@@ -81,7 +81,8 @@
             <hr class="border-white/10">
 
             @auth
-                <a href="{{ route('dashboard') }}" class="text-lg font-bold text-orange-500">
+                <a href="{{ auth()->user()->role === 'admin' ? route('dashboard') : route('user.home') }}"
+                    class="text-lg font-bold text-orange-500">
                     {{ auth()->user()->role === 'admin' ? 'Member Management' : 'My Dashboard' }}
                 </a>
             @else

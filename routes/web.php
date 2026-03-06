@@ -6,17 +6,14 @@ use App\Livewire\Admin\ProductForm;
 use App\Livewire\Admin\ProductIndex;
 use App\Livewire\Admin\UserForm;
 use App\Livewire\Admin\UserIndex;
+use App\Livewire\User\UserDashboard;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get(
-    '/equipment',
-    [EquipmentController::class, 'index']
-)
-    ->name('equipment');
+Route::get('/equipment', [EquipmentController::class, 'index'])->name('equipment');
 
 Route::get('/benefits', function () {
     return view('benefits');
@@ -33,12 +30,20 @@ Route::get('/contact', function () {
 
 // Restricted Routes (Only for Logged-in Users)
 Route::middleware(['auth'])->group(function () {
+
+    // User Dashboard
+    Route::get('/home', UserDashboard::class)
+        ->middleware(['verified'])
+        ->name('user.home');
+
+    // Login User Profile Settings
     Route::prefix('/user')->group(function () {
         Route::get('/settings', [ProfileController::class, 'editSettings'])->name('user.settings');
         Route::patch('/settings', [ProfileController::class, 'updateSettings'])->name('user.settings.update');
         Route::put('/settings/password', [ProfileController::class, 'updatePassword'])->name('user.password.update');
         Route::delete('/settings', [ProfileController::class, 'destroy'])->name('user.settings.destroy');
     });
+    
 });
 
 // Restricted Routes (Only for Logged-in Admins)
@@ -50,7 +55,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->name('dashboard');
 
     // User Management CRUD
-// User Management CRUD
+    // User Management CRUD
     Route::prefix('admin')->name('admin.')->group(function () {
 
         // Fix: Added the dot after 'products' in the name
