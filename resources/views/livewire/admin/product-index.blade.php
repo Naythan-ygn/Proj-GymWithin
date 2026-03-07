@@ -43,6 +43,12 @@
                             class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                             Stock Status</th>
                         <th
+                            class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                            Created At</th>
+                        <th
+                            class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                            Updated At</th>
+                        <th
                             class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                             Actions</th>
                     </tr>
@@ -66,14 +72,15 @@
                                 </button>
                             </td>
                             <td class="px-6 py-4">
-                                <flux:badge size="sm" inset="top bottom" class="capitalize">{{ $product->category }}
+                                <flux:badge size="sm" inset="top bottom" class="capitalize">
+                                    {{ $product->category->name ?? 'Uncategorized' }}
                                 </flux:badge>
                             </td>
                             <td class="px-6 py-4 font-semibold text-zinc-900 dark:text-zinc-100">
                                 ${{ number_format($product->price, 2) }}
                             </td>
                             <td class="px-6 py-4">
-                                @if($product->stock <= 0)
+                                @if ($product->stock <= 0)
                                     <span
                                         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500/10 text-red-500 border border-red-500/20">
                                         Out of Stock
@@ -89,6 +96,12 @@
                                         In Stock ({{ $product->stock }})
                                     </span>
                                 @endif
+                            </td>
+                            <td class="px-6 py-4 font-semilbold text-zinc-900 dark:text-zinc-100">
+                                {{ $product->created_at->format('M d, Y') }}
+                            </td>
+                            <td class="px-6 py-4 text-zinc-900 dark:text-zinc-500">
+                                {{ $product->updated_at->diffForHumans() }}
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end gap-2">
@@ -119,7 +132,7 @@
 
     {{-- Product Preview Drawer --}}
     <flux:modal name="product-preview-drawer" variant="drawer" class="glass-modal-content w-full max-w-md">
-        @if($selectedProduct)
+        @if ($selectedProduct)
             <div class="space-y-8 p-4">
                 <div
                     class="aspect-square w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 overflow-hidden">
@@ -129,7 +142,9 @@
 
                 <header class="space-y-2">
                     <flux:heading size="xl">{{ $selectedProduct->name }}</flux:heading>
-                    <flux:badge color="orange" size="sm" class="uppercase">{{ $selectedProduct->category }}</flux:badge>
+                    <flux:badge color="orange" size="sm" class="uppercase">
+                        {{ $selectedProduct->category->name ?? 'Uncategorized' }}
+                    </flux:badge>
                 </header>
 
                 <div class="glass-panel rounded-2xl p-6 space-y-4 border border-zinc-200 dark:border-zinc-800">

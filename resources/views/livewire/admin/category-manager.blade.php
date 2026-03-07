@@ -1,4 +1,4 @@
-<div class="p-6 max-w-4xl mx-auto space-y-6">
+<div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 
     {{-- Header Section --}}
@@ -17,7 +17,7 @@
                     placeholder="e.g., Weightlifting Gear" />
             </div>
             <div class="flex gap-2">
-                @if($editingId)
+                @if ($editingId)
                     <flux:button variant="ghost" wire:click="cancel">Cancel</flux:button>
                 @endif
                 <flux:button type="submit" variant="primary">
@@ -42,6 +42,14 @@
                             URL Slug
                         </th>
                         <th
+                            class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                            Created At
+                        </th>
+                        <th
+                            class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                            Updated At
+                        </th>
+                        <th
                             class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                             Actions
                         </th>
@@ -55,10 +63,16 @@
                             </td>
                             <td class="px-6 py-4">
                                 <code
-                                    class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-orange-600 dark:text-orange-400">
-                                        {{ $category->slug }}
-                                    </code>
+                                    class="text-xs bg-zinc-400 dark:bg-gray-600 px-2 py-1 rounded text-white-600 dark:text-white-400">
+                                    {{ $category->slug }}
+                                </code>
                             </td>
+                            <td class="px-6 py-4 font-semilbold text-zinc-900 dark:text-zinc-100">
+                                {{ $category->created_at->format('M d, Y') }}
+                            </td>
+                            <td class="px-6 py-4 text-zinc-900 dark:text-zinc-500">
+                                {{ $category->updated_at->diffForHumans() }}
+                            </td>   
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end gap-2">
                                     <flux:button variant="ghost" size="sm" icon="pencil"
