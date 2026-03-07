@@ -39,8 +39,8 @@
                             Manage Members
                         </a>
                     @else
-                        {{-- User name links to their dashboard/home --}}
-                        <a href="{{ route('user.home') }}" class="text-zinc-100 hover:text-white font-semibold transition-colors">
+                        <a href="{{ route('user.settings') }}"
+                            class="text-zinc-100 hover:text-white font-semibold transition-colors">
                             {{ auth()->user()->name }}
                         </a>
                     @endif

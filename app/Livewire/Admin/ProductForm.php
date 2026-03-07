@@ -23,10 +23,15 @@ class ProductForm extends Component
     public $description = '';
     public $image; // Temporary file for upload
     public $existingImage; // Current image path
+    public $categories; // For the dropdown
+    public $category_id; // To store the selected ID
 
     public function mount(?Product $product = null)
     {
+        $this->categories = \App\Models\Category::all(); // Fetch from DB
+
         if ($product && $product->exists) {
+            $this->category_id = $product->category_id;
             $this->product = $product;
             $this->name = $product->name;
             $this->sku = $product->sku;
@@ -46,7 +51,7 @@ class ProductForm extends Component
         $rules = [
             'name' => 'required|string|max:255',
             'sku' => 'required|unique:products,sku,' . ($this->product->id ?? 'NULL'),
-            'category' => 'required',
+            'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'description' => 'nullable|string',

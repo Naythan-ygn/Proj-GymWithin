@@ -4,7 +4,7 @@
     {{-- Header Section --}}
     <div class="flex items-center justify-between px-4 pt-4">
         <div>
-            <flux:heading size="xl">Store Inventory</flux:heading>
+            <flux:heading size="xl">Store Equipment</flux:heading>
             <flux:subheading>Manage gym apparel, supplements, and equipment.</flux:subheading>
         </div>
         <flux:button href="{{ route('admin.products.create') }}" variant="primary" icon="plus" wire:navigate>
@@ -17,6 +17,7 @@
         <flux:input class="flex-1" wire:model.live.debounce.300ms="search" icon="magnifying-glass"
             placeholder="Search products by name or SKU..." />
         <flux:select wire:model.live="categoryFilter" placeholder="All Categories" class="max-w-xs">
+            <flux:select.option value="">All Categories</flux:select.option>
             <flux:select.option value="apparel">Apparel</flux:select.option>
             <flux:select.option value="supplements">Supplements</flux:select.option>
             <flux:select.option value="gear">Equipment</flux:select.option>

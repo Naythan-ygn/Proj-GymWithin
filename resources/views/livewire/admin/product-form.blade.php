@@ -20,9 +20,10 @@
                     <div class="grid grid-cols-2 gap-4">
                         <flux:input wire:model="sku" label="SKU / Barcode" placeholder="GW-PRO-001" />
                         <flux:select wire:model="category" label="Category">
-                            <flux:select.option value="apparel">Apparel</flux:select.option>
-                            <flux:select.option value="supplements">Supplements</flux:select.option>
-                            <flux:select.option value="gear">Equipment</flux:select.option>
+                            <flux:select.option value="">Select Category</flux:select.option>
+                            @foreach(\App\Models\Category::all() as $cat)
+                                <flux:select.option value="{{ $cat->slug }}">{{ $cat->name }}</flux:select.option>
+                            @endforeach
                         </flux:select>
                     </div>
 
@@ -39,7 +40,8 @@
                         <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Product Image</label>
 
                         <div x-data="{ uploading: false, progress: 0 }" x-on:livewire-upload-start="uploading = true"
-                            x-on:livewire-upload-finish="uploading = false" x-on:livewire-upload-error="uploading = false"
+                            x-on:livewire-upload-finish="uploading = false"
+                            x-on:livewire-upload-error="uploading = false"
                             x-on:livewire-upload-progress="progress = $event.detail.progress" class="relative">
                             {{-- Clicking this div triggers the hidden file input below --}}
                             <div onclick="document.getElementById('image-upload').click()"
@@ -51,14 +53,17 @@
                                     {{-- Show existing image if editing --}}
                                     <img src="{{ asset('storage/' . $existingImage) }}" class="object-cover size-full">
                                 @else
-                                    <flux:icon name="cloud-arrow-up" class="size-8 text-zinc-400 group-hover:text-orange-500" />
+                                    <flux:icon name="cloud-arrow-up"
+                                        class="size-8 text-zinc-400 group-hover:text-orange-500" />
                                     <span class="text-xs text-zinc-500 mt-2">Click to upload image</span>
                                 @endif
 
                                 {{-- Progress Bar for Uploading --}}
-                                <div x-show="uploading" class="absolute inset-0 bg-zinc-900/60 flex items-center justify-center p-4">
+                                <div x-show="uploading"
+                                    class="absolute inset-0 bg-zinc-900/60 flex items-center justify-center p-4">
                                     <div class="w-full bg-zinc-700 rounded-full h-1.5">
-                                        <div class="bg-orange-500 h-1.5 rounded-full" :style="'width: ' + progress + '%'"></div>
+                                        <div class="bg-orange-500 h-1.5 rounded-full"
+                                            :style="'width: ' + progress + '%'"></div>
                                     </div>
                                 </div>
                             </div>

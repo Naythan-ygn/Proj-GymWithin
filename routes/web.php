@@ -2,13 +2,14 @@
 
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\ProfileController;
+use App\Livewire\Admin\CategoryManager;
 use App\Livewire\Admin\ProductForm;
 use App\Livewire\Admin\ProductIndex;
 use App\Livewire\Admin\UserForm;
 use App\Livewire\Admin\UserIndex;
 use App\Livewire\User\UserDashboard;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 // Public Routes
 Route::get('/', function () {
@@ -74,6 +75,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('/{product}/edit', ProductForm::class)->name('edit');
         });
 
+        Route::prefix('/categories')->name('categories.')->group(function () {
+            Route::get('/', CategoryManager::class)->name('index');
+        });
+        
         Route::prefix('/users')->name('users.')->group(function () {
             Route::get('/', UserIndex::class)->name('index');
             Route::get('/create', UserForm::class)->name('create');

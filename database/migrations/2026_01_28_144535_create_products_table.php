@@ -9,16 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    // database/migrations/2026_01_28_144535_create_products_table.php
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('sku')->unique();
+            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->text('description');
             $table->decimal('price', 10, 2);
             $table->string('image_path')->nullable();
-            $table->string('category');
             $table->integer('stock')->default(0);
             $table->timestamps();
             $table->softDeletes();

@@ -19,17 +19,28 @@
                     wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:sidebar.item>
-                
-                <flux:sidebar.item icon="shopping-bag" :href="route('admin.products.index')"
-                    :current="request()->routeIs('admin.products.*')" wire:navigate>
-                    {{ __('Inventory') }}
-                </flux:sidebar.item>
 
                 <flux:sidebar.item icon="users" :href="route('admin.users.index')"
                     :current="request()->routeIs('admin.users.*')" wire:navigate>
                     {{ __('Manage Users') }}
                 </flux:sidebar.item>
             </flux:sidebar.group>
+
+            <flux:sidebar.group :heading="__('Store')" class="grid">
+                <flux:sidebar.item icon="tag" :href="route('admin.categories.index')" wire:navigate>
+                    {{ __('Categories') }}
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="archive-box" :href="route('dashboard')" wire:navigate>
+                    Inventory
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="wrench" :href="route('admin.products.index')"
+                    :current="request()->routeIs('admin.products.*')" wire:navigate>
+                    Equipment
+                </flux:sidebar.item>
+            </flux:sidebar.group>
+
         </flux:sidebar.nav>
 
         <flux:spacer />

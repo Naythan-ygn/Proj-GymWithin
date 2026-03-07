@@ -4,8 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
-
 class ProductFactory extends Factory
 {
     protected $model = Product::class;
@@ -25,13 +23,12 @@ class ProductFactory extends Factory
         $name = $this->faker->randomElement($names[$category]);
 
         return [
-            'name' => $name,
-            'sku' => 'GW-' . strtoupper(Str::random(6)), // Matches your form logic
-            'description' => $this->faker->paragraph(2),
-            'price' => $this->faker->randomFloat(2, 10, 150),
-            'category' => $category,
-            'stock' => $this->faker->numberBetween(0, 50),
-            'image_path' => null, // Leave null so it uses your UI placeholder logic
+            'name' => $this->faker->words(3, true),
+            'sku' => 'GW-' . strtoupper($this->faker->unique()->bothify('??#?##')),
+            'description' => $this->faker->paragraph(),
+            'price' => $this->faker->randomFloat(2, 10, 200),
+            'stock' => $this->faker->numberBetween(0, 100),
+            'image_path' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ];
