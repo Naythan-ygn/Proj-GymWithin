@@ -8,8 +8,17 @@ use App\Livewire\Admin\UserForm;
 use App\Livewire\Admin\UserIndex;
 use App\Livewire\User\UserDashboard;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
+// Public Routes
 Route::get('/', function () {
+    if (Auth::check()) {
+        // Accessing the 'role' property from the authenticated user model
+        return Auth::user()->role === 'admin'
+            ? redirect()->route('dashboard')
+            : redirect()->route('user.home');
+    }
+
     return view('welcome');
 })->name('home');
 
@@ -43,7 +52,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/settings/password', [ProfileController::class, 'updatePassword'])->name('user.password.update');
         Route::delete('/settings', [ProfileController::class, 'destroy'])->name('user.settings.destroy');
     });
-    
+
 });
 
 // Restricted Routes (Only for Logged-in Admins)

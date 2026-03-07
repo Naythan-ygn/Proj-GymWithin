@@ -13,6 +13,14 @@
 
         {{-- Desktop Navigation --}}
         <div class="hidden md:flex items-center space-x-8">
+            {{-- NEW: Conditional Home Link for Logged-in Users --}}
+            @auth
+                <a href="{{ auth()->user()->role === 'admin' ? route('dashboard') : route('user.home') }}"
+                    class="text-zinc-300 hover:text-orange-500 transition-colors font-medium">
+                    Home
+                </a>
+            @endauth
+
             <a href="{{ route('equipment') }}"
                 class="text-zinc-300 hover:text-orange-500 transition-colors font-medium">Equipment</a>
             <a href="{{ route('benefits') }}"
@@ -31,8 +39,8 @@
                             Manage Members
                         </a>
                     @else
-                        <a href="{{ route('user.settings') }}"
-                            class="text-zinc-100 hover:text-white font-semibold transition-colors">
+                        {{-- User name links to their dashboard/home --}}
+                        <a href="{{ route('user.home') }}" class="text-zinc-100 hover:text-white font-semibold transition-colors">
                             {{ auth()->user()->name }}
                         </a>
                     @endif

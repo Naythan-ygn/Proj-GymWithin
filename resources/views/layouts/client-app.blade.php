@@ -40,6 +40,10 @@
     @include('partials.nav')
 
     <main>
+        {{-- This catches Livewire component content --}}
+        {{ $slot ?? '' }}
+
+        {{-- This catches standard @section('content') from non-Livewire pages --}}
         @yield('content')
     </main>
 
