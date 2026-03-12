@@ -65,7 +65,9 @@ class ProductIndex extends Component
                         ->orWhere('sku', 'like', '%' . $this->search . '%');
                 })
                 ->when($this->categoryFilter, function ($query) {
-                    $query->where('category', $this->categoryFilter);
+                    $query->whereHas('category', function ($q) {
+                        $q->where('slug', $this->categoryFilter);
+                    });
                 })
                 ->latest()
                 ->paginate(10),

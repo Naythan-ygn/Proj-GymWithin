@@ -1,4 +1,5 @@
-<nav x-data="{ mobileMenuOpen: false }" class="dark glass-panel fixed top-0 left-0 right-0 z-50 border-b border-white/10 shadow-2xl"
+<nav x-data="{ mobileMenuOpen: false }"
+    class="dark glass-panel fixed top-0 left-0 right-0 z-50 border-b border-white/10 shadow-2xl"
     style="background: rgba(24, 24, 27, 0.85); border-color: rgba(63, 63, 70, 0.4);">
 
     <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
@@ -39,13 +40,22 @@
                             Manage Members
                         </a>
                     @else
+                        <a href="{{ route('cart.index') }}" class="relative">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            @if(session('cart'))
+                                <span
+                                    class="absolute -top-2 -right-2 bg-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                    {{ count(session('cart')) }}
+                                </span>
+                            @endif
+                        </a>
+
+                        <flux:avatar :name="auth()->user()->name" size="sm" class="border border-white/20 ml-2" />
                         <a href="{{ route('user.settings') }}"
                             class="text-zinc-100 hover:text-white font-semibold transition-colors">
                             {{ auth()->user()->name }}
                         </a>
                     @endif
-
-                    <flux:avatar :name="auth()->user()->name" size="sm" class="border border-white/20 ml-2" />
                 @else
                     <a href="{{ route('login') }}" class="text-zinc-400 hover:text-white transition-colors">Log in</a>
                     <a href="{{ route('register') }}"
@@ -77,23 +87,50 @@
         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 -translate-y-4" class="md:hidden border-t border-white/10"
         style="background: rgba(24, 24, 27, 0.98);">
+
         <div class="px-6 py-8 space-y-6 flex flex-col">
+            {{-- Standard Links --}}
             <a href="{{ route('equipment') }}" @click="mobileMenuOpen = false"
-                class="text-lg font-medium text-zinc-100">Equipment</a>
+                class="text-lg font-medium text-zinc-100 hover:text-orange-500 transition-colors">Equipment</a>
             <a href="{{ route('benefits') }}" @click="mobileMenuOpen = false"
-                class="text-lg font-medium text-zinc-100">Benefits</a>
+                class="text-lg font-medium text-zinc-100 hover:text-orange-500 transition-colors">Benefits</a>
             <a href="{{ route('about') }}" @click="mobileMenuOpen = false"
-                class="text-lg font-medium text-zinc-100">About Us</a>
+                class="text-lg font-medium text-zinc-100 hover:text-orange-500 transition-colors">About Us</a>
             <a href="{{ route('contact') }}" @click="mobileMenuOpen = false"
-                class="text-lg font-medium text-zinc-100">Contact Us</a>
+                class="text-lg font-medium text-zinc-100 hover:text-orange-500 transition-colors">Contact Us</a>
+
             <hr class="border-white/10">
 
             @auth
-                <a href="{{ auth()->user()->role === 'admin' ? route('dashboard') : route('user.home') }}"
-                    class="text-lg font-bold text-orange-500">
-                    {{ auth()->user()->role === 'admin' ? 'Member Management' : 'My Dashboard' }}
-                </a>
+                {{-- User-Specific Mobile Section --}}
+                <div class="space-y-6">
+                    {{-- Mobile Cart Link --}}
+                    @if (auth()->user()->role !== 'admin')
+                        <a href="{{ route('cart.index') }}" @click="mobileMenuOpen = false"
+                            class="flex items-center justify-between text-lg font-medium text-zinc-100">
+                            <span><i class="fas fa-shopping-cart mr-3 text-zinc-400"></i>My Cart</span>
+                            @if(session('cart'))
+                                <span class="bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                                    {{ count(session('cart')) }} Items
+                                </span>
+                            @endif
+                        </a>
+                    @endif
+
+                    {{-- Settings & Logout --}}
+                    <a href="{{ route('user.settings') }}" class="text-lg font-medium text-zinc-100">
+                        <i class="fas fa-cog mr-3 text-zinc-400"></i>Account Settings
+                    </a>
+
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full text-left text-lg font-medium text-red-500">
+                            <i class="fas fa-sign-out-alt mr-3"></i>Logout
+                        </button>
+                    </form>
+                </div>
             @else
+                {{-- Guest Actions --}}
                 <div class="flex flex-col gap-4 text-center">
                     <a href="{{ route('login') }}" class="text-lg font-medium text-zinc-400">Log in</a>
                     <a href="{{ route('register') }}"

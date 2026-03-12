@@ -23,12 +23,12 @@
                 <h2 class="text-3xl font-bold mb-8">Browse by Category</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                     @foreach ($categories as $category)
-                        <a href="{{ route('equipment') }}?category={{ strtolower($category['name']) }}"
-                            class="glass-card m-0 group flex flex-col items-center justify-center p-8 rounded-2xl hover:border-orange-500 transition-all duration-300 transform hover:-translate-y-2 cursor-pointer text-center">
-                            <i
-                                class="{{ $category['icon'] }} text-4xl text-gray-400 group-hover:text-orange-500 mb-4 transition-colors"></i>
-                            <h3 class="text-xl font-semibold">{{ $category['name'] }}</h3>
-                        </a>
+                    <a href="{{ route('equipment') }}?category={{ strtolower($category['name']) }}"
+                        class="glass-card m-0 group flex flex-col items-center justify-center p-8 rounded-2xl hover:border-orange-500 transition-all duration-300 transform hover:-translate-y-2 cursor-pointer text-center">
+                        <i
+                            class="{{ $category['icon'] }} text-4xl text-gray-400 group-hover:text-orange-500 mb-4 transition-colors"></i>
+                        <h3 class="text-xl font-semibold">{{ $category['name'] }}</h3>
+                    </a>
                     @endforeach
                 </div>
             </div>
@@ -52,11 +52,13 @@
                             </div>
                             <div class="product-details">
                                 <p class="text-xs text-orange-500 font-semibold mb-1 uppercase tracking-wider">
-                                    {{ $item->category ?? 'Gear' }}</p>
+                                    {{ $item->category->name ?? 'Gear' }}
+                                </p>
                                 <h3 class="product-title" title="{{ $item->name }}">{{ $item->name }}</h3>
-                                <button class="view-details-btn mt-2 w-full">
+                                {{-- Update your button/link to this --}}
+                                <a href="{{ route('products.show', $item->sku) }}" class="view-details-btn">
                                     View Details <i class="fas fa-arrow-right ml-2 text-xs"></i>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     @empty
@@ -66,7 +68,6 @@
                     @endforelse
                 </div>
             </div>
-
         </div>
     </section>
 </div>

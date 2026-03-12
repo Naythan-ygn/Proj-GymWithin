@@ -34,43 +34,25 @@
             <aside class="sidebar-filters">
                 <div class="mb-8">
                     <h2 class="text-2xl font-bold mb-6">Filters</h2>
-                    <div class="flex items-center text-gray-400 mb-2">
-                        <i class="fas fa-phone-alt filter-icon"></i>
-                        <span>(+95) 988-821-8097</span>
-                    </div>
-                    <div class="flex items-center text-gray-400">
-                        <i class="fas fa-map-marker-alt filter-icon"></i>
-                        <span>GymWithin HQ, MM, Dhammazedi Road</span>
-                    </div>
                 </div>
 
-                {{-- Filter Groups (Static HTML based on image) --}}
                 <div class="filter-group mb-4">
-                    <h3 class="cursor-pointer">
-                        <i class="fas fa-user filter-icon"></i> Strength
-                    </h3>
-                    {{-- Add list items here if needed, hidden by default for accordion effect --}}
-                </div>
-                <div class="filter-group mb-4">
-                    <h3 class="cursor-pointer">
-                        <i class="fas fa-dumbbell filter-icon"></i> Door utilities
+                    <h3 class="cursor-pointer {{ !request('category') ? 'text-orange-500' : '' }}">
+                        <a href="{{ route('equipment') }}">
+                            <i class="fas fa-th-large filter-icon"></i> All Equipment
+                        </a>
                     </h3>
                 </div>
-                <div class="filter-group mb-4">
-                    <h3 class="cursor-pointer">
-                        <i class="fas fa-home filter-icon"></i> Strength
-                    </h3>
-                </div>
-                <div class="filter-group mb-4">
-                    <h3 class="cursor-pointer">
-                        <i class="fas fa-check-square filter-icon"></i> Accessories
-                    </h3>
-                </div>
-                <div class="filter-group mb-4">
-                    <h3 class="cursor-pointer text-orange-500">
-                        <i class="far fa-circle filter-icon"></i> New Weights
-                    </h3>
-                </div>
+
+                @foreach($categories as $cat)
+                    <div class="filter-group mb-4">
+                        <h3 class="cursor-pointer {{ request('category') == $cat->slug ? 'text-orange-500' : '' }}">
+                            <a href="{{ route('equipment', ['category' => $cat->slug]) }}">
+                                {{ $cat->name }}
+                            </a>
+                        </h3>
+                    </div>
+                @endforeach
             </aside>
 
             {{-- Right Side Grid --}}
@@ -79,7 +61,7 @@
 
                 <div class="grid-container">
                     {{-- Loop through equipment passed from controller --}}
-                    @foreach ($equipment as $item)
+                    @foreach ($products as $item)
                         <div class="product-card fade-in" data-fade>
                             {{-- Conditional Price Badge --}}
                             @if ($item['price'])
@@ -93,7 +75,8 @@
 
                             <div class="product-details">
                                 <h3 class="product-title" title="{{ $item['name'] }}">{{ $item['name'] }}</h3>
-                                <a href="#" class="view-details-btn">
+                                {{-- Update your button/link to this --}}
+                                <a href="{{ route('products.show', $item->sku) }}" class="view-details-btn">
                                     View Details <i class="fas fa-arrow-right ml-2 text-xs"></i>
                                 </a>
                             </div>

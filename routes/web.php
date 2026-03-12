@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\ProfileController;
 use App\Livewire\Admin\CategoryManager;
@@ -8,6 +10,7 @@ use App\Livewire\Admin\ProductIndex;
 use App\Livewire\Admin\UserForm;
 use App\Livewire\Admin\UserIndex;
 use App\Livewire\User\UserDashboard;
+// use App\Livewire\User\ShoppingCart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +27,17 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/equipment', [EquipmentController::class, 'index'])->name('equipment');
+
+// Route::get('/cart', ShoppingCart::class)->name('cart.index');
+
+Route::prefix('/cart')->name('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::post('/add/{product}', [CartController::class, 'add'])->name('add');
+    Route::post('/update/{id}', [CartController::class, 'update'])->name('update');
+    Route::post('/remove/{id}', [CartController::class, 'remove'])->name('remove');
+});
+
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 
 Route::get('/benefits', function () {
     return view('benefits');
@@ -45,6 +59,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home', UserDashboard::class)
         ->middleware(['verified'])
         ->name('user.home');
+
+    Route::get('/equipment/{product:sku}', [EquipmentController::class, 'show'])->name('products.show');
+
+    // Checkout
+    Route::prefix('/checkout')->name('checkout.')->group(function () {
+        Route::post('/process', [CheckoutController::class, 'process'])->name('process');
+        Route::get('/success/{order_number}', function ($order_number) {
+            return view('partials.checkout.success', compact('order_number'));
+        })->name('success');
+    });
 
     // Login User Profile Settings
     Route::prefix('/user')->group(function () {
@@ -78,7 +102,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::prefix('/categories')->name('categories.')->group(function () {
             Route::get('/', CategoryManager::class)->name('index');
         });
-        
+
         Route::prefix('/users')->name('users.')->group(function () {
             Route::get('/', UserIndex::class)->name('index');
             Route::get('/create', UserForm::class)->name('create');

@@ -2,67 +2,47 @@
 
 namespace App\Http\Controllers;
 
-// use Illuminate\Http\Request;
+use App\Models\Product; // Add this
+use App\Models\Category; // Add this
+use Illuminate\Http\Request; // Use the standard Request
 use Illuminate\Routing\Controller;
 
 class EquipmentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Simulating database data based on Image 1
-        // In a real scenario, this would be: $equipment = Equipment::all();
-        $equipment = [
-            [
-                'id' => 1,
-                'name' => 'Raptors Stride',
-                // Ensure these image names match files in public/Equipment/
-                'image' => 'treadmill_v1.png', 
-                'price' => null,
-            ],
-            [
-                'id' => 2,
-                'name' => 'Advanced Treadmill 5000',
-                'image' => 'treadmill_v2.png',
-                'price' => '1,899', // One item has a price badge in the image
-            ],
-            [
-                'id' => 3,
-                'name' => 'Ellex Elliptical',
-                'image' => 'elliptical_v1.png',
-                'price' => null,
-            ],
-            [
-                'id' => 4,
-                'name' => 'Compact Dumbbell Set',
-                'image' => 'bench_v1.png',
-                'price' => null,
-            ],
-            [
-                'id' => 5,
-                'name' => 'Raptors Air Rower',
-                'image' => 'treadmill_v3.png',
-                'price' => null,
-            ],
-            [
-                'id' => 6,
-                'name' => 'Compact Dumbbell Set',
-                'image' => 'dumbbells_v1.png',
-                'price' => null,
-            ],
-            [
-                'id' => 7,
-                'name' => 'Compact Dumbbell Set',
-                'image' => 'bike_v1.png',
-                'price' => null,
-            ],
-            [
-                'id' => 8,
-                'name' => 'Velocity Cycle',
-                'image' => 'bike_v2.png',
-                'price' => null,
-            ],
-        ];
+        // 1. Get the category slug from the URL (e.g., ?category=apparel)
+        $categorySlug = $request->query('category');
 
-        return view('equipment', compact('equipment'));
+        // 2. Fetch products, optionally filtered by category
+        $query = Product::query()->with('category');
+
+        if ($categorySlug) {
+            $query->whereHas('category', function ($q) use ($categorySlug) {
+                $q->where('slug', $categorySlug);
+            });
+        }
+
+        $products = $query->latest()->get();
+
+        // 3. Fetch all categories for the sidebar
+        $categories = Category::all();
+
+        // Pass 'products' instead of 'equipment' to match the updated view
+        return view('equipment', compact('products', 'categories'));
+    }
+
+    public function show(Product $product)
+    {
+        // Eager load category to avoid N+1 queries
+        $product->load('category');
+
+        // Fetch related products (same category, excluding current product)
+        $relatedProducts = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->take(4)
+            ->get();
+
+        return view('equipment-show', compact('product', 'relatedProducts'));
     }
 }

@@ -15,7 +15,7 @@ class UserDashboard extends Component
     {
         // Safely fetch 4 random products (with a fallback if the model isn't ready)
         $products = class_exists(Product::class)
-            ? Product::inRandomOrder()->take(4)->get()
+            ? Product::inRandomOrder()->take(6)->get()
             : collect([]);
 
         $categories = [
