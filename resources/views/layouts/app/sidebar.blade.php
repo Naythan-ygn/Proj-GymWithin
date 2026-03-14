@@ -28,18 +28,30 @@
             </flux:sidebar.group>
 
             {{-- Store Management --}}
-            <flux:sidebar.group :heading="__('Store')" class="grid">           
+            <flux:sidebar.group :heading="__('Store')" class="grid">
                 <flux:sidebar.item icon="archive-box" :href="route('dashboard')" wire:navigate>
                     {{ __('Inventory') }}
                 </flux:sidebar.item>
-                                    
+
                 <flux:sidebar.item icon="tag" :href="route('admin.categories.index')" wire:navigate>
                     {{ __('Categories') }}
                 </flux:sidebar.item>
-                
+
                 <flux:sidebar.item icon="wrench" :href="route('admin.products.index')"
                     :current="request()->routeIs('admin.products.*')" wire:navigate>
                     {{ __('Products') }}
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="shopping-cart" :href="route('admin.orders.index')" wire:navigate>
+                    {{ __('Orders') }}
+                    @php
+                        $pendingCount = \App\Models\Order::where('status', 'pending')->count();
+                    @endphp
+                    @if ($pendingCount > 0)
+                        <flux:badge size="sm" color="orange" inset="top bottom" class="ml-auto">
+                            {{ $pendingCount }}
+                        </flux:badge>
+                    @endif
                 </flux:sidebar.item>
             </flux:sidebar.group>
 

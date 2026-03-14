@@ -10,6 +10,8 @@ use App\Livewire\Admin\ProductIndex;
 use App\Livewire\Admin\UserForm;
 use App\Livewire\Admin\UserIndex;
 use App\Livewire\User\UserDashboard;
+use App\Livewire\Admin\OrderIndex;
+use App\Livewire\User\OrderHistory;
 // use App\Livewire\User\ShoppingCart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -60,6 +62,10 @@ Route::middleware(['auth'])->group(function () {
         ->middleware(['verified'])
         ->name('user.home');
 
+    // User Order History
+    Route::get('/my-orders', OrderHistory::class)->name('user.orders');
+
+    // Product Detail Page (Accessible to all, but can show more details if logged in)
     Route::get('/equipment/{product:sku}', [EquipmentController::class, 'show'])->name('products.show');
 
     // Checkout
@@ -77,7 +83,6 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/settings/password', [ProfileController::class, 'updatePassword'])->name('user.password.update');
         Route::delete('/settings', [ProfileController::class, 'destroy'])->name('user.settings.destroy');
     });
-
 });
 
 // Restricted Routes (Only for Logged-in Admins)
@@ -89,20 +94,24 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->name('dashboard');
 
     // User Management CRUD
-    // User Management CRUD
     Route::prefix('admin')->name('admin.')->group(function () {
 
-        // Fix: Added the dot after 'products' in the name
+        // Admin Product Management CRUD
         Route::prefix('/products')->name('products.')->group(function () {
             Route::get('/', ProductIndex::class)->name('index'); // Now admin.products.index
             Route::get('/create', ProductForm::class)->name('create');
             Route::get('/{product}/edit', ProductForm::class)->name('edit');
         });
 
+        // Admin Category Management CRUD
         Route::prefix('/categories')->name('categories.')->group(function () {
             Route::get('/', CategoryManager::class)->name('index');
         });
 
+        // Admin Order Monitoring View
+        Route::get('/orders', OrderIndex::class)->name('orders.index');
+
+        // Admin User Management
         Route::prefix('/users')->name('users.')->group(function () {
             Route::get('/', UserIndex::class)->name('index');
             Route::get('/create', UserForm::class)->name('create');
