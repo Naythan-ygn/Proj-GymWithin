@@ -52,7 +52,20 @@
                                 {{ ucfirst($order->status) }}
                             </flux:badge>
                         </td>
-                        <td class="px-6 py-4 text-zinc-500 text-xs">{{ $order->created_at->format('M d, h:i A') }}</td>
+                        <td class="px-6 py-4 text-zinc-500 text-xs">
+                            <span x-data="{
+                                localTime: new Intl.DateTimeFormat(undefined, {
+                                    month: 'short',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: true
+                                }).format(new Date('{{ $order->created_at->toIso8601String() }}'))
+                            }" x-text="localTime">
+                                {{-- Fallback for SEO or slow JS --}}
+                                {{ $order->created_at->format('M d, h:i A') }} UTC
+                            </span>
+                        </td>
                         <td class="px-6 py-4 text-right" onclick="event.stopPropagation()">
                             <flux:dropdown>
                                 <flux:button variant="ghost" icon="ellipsis-horizontal" size="sm" />
@@ -110,7 +123,8 @@
                                         class="object-cover size-full">
                                 </div>
                                 <span class="text-sm font-medium">{{ $item->product->name }}
-                                    (x{{ $item->quantity }})</span>
+                                    (x{{ $item->quantity }})
+                                </span>
                             </div>
                             <span class="font-bold">${{ number_format($item->price * $item->quantity, 2) }}</span>
                         </div>
