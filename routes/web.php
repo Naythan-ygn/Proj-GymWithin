@@ -12,7 +12,7 @@ use App\Livewire\Admin\UserIndex;
 use App\Livewire\User\UserDashboard;
 use App\Livewire\Admin\OrderIndex;
 use App\Livewire\User\OrderHistory;
-// use App\Livewire\User\ShoppingCart;
+use App\Livewire\Admin\StockVelocity;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -102,6 +102,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('/create', ProductForm::class)->name('create');
             Route::get('/{product}/edit', ProductForm::class)->name('edit');
         });
+
+        // Add this new route for Stock Velocity / Inventory
+        Route::get('/inventory', StockVelocity::class)->name('inventory.index');
 
         // Admin Category Management CRUD
         Route::prefix('/categories')->name('categories.')->group(function () {

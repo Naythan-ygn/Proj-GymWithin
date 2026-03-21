@@ -20,7 +20,7 @@
             <flux:select.option value="">All Categories</flux:select.option>
             <flux:select.option value="apparel">Apparel</flux:select.option>
             <flux:select.option value="supplements">Supplements</flux:select.option>
-            <flux:select.option value="gear">Equipment</flux:select.option>
+            <flux:select.option value="equipment">Equipment</flux:select.option>
         </flux:select>
     </div>
 

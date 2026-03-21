@@ -29,10 +29,10 @@
 
             {{-- Store Management --}}
             <flux:sidebar.group :heading="__('Store')" class="grid">
-                <flux:sidebar.item icon="archive-box" :href="route('dashboard')" wire:navigate>
+                <flux:sidebar.item icon="archive-box" :href="route('admin.inventory.index')" :current="request()->routeIs('admin.inventory.*')" wire:navigate>
                     {{ __('Inventory') }}
                 </flux:sidebar.item>
-
+                
                 <flux:sidebar.item icon="tag" :href="route('admin.categories.index')" wire:navigate>
                     {{ __('Categories') }}
                 </flux:sidebar.item>
