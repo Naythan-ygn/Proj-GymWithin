@@ -36,8 +36,6 @@ return [
     ],
 
     'openrouter' => [
-        'key' => env('OPENROUTER_API_KEY'),
-        'url' => env('OPENROUTER_SITE_URL'),
-        'name' => env('OPENROUTER_SITE_NAME'),
+        'key' => env('OPENROUTER_API_KEY')
     ],
 ];

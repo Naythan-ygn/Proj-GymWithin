@@ -142,81 +142,112 @@ scrollToTopBtn.addEventListener("click", () => {
     });
 });
 
-// Chatbot Functionality
+// --- Consolidated Chatbot Logic ---
+
+// --- Unified Chatbot Logic ---
 const chatbotButton = document.getElementById("chatbotButton");
 const chatbotWindow = document.getElementById("chatbotWindow");
-const closeChatbot = document.getElementById("closeChatbot");
+const chatbotMessages = document.getElementById("chatbotMessages");
 const chatbotInput = document.getElementById("chatbotInput");
 const chatbotSend = document.getElementById("chatbotSend");
-const chatbotMessages = document.getElementById("chatbotMessages");
 
-// Toggle chatbot window
-chatbotButton.addEventListener("click", () => {
-    chatbotWindow.classList.toggle("active");
-    if (chatbotWindow.classList.contains("active")) {
-        chatbotInput.focus();
-    }
-});
+// Get data from Blade metadata
+const sessionId = document.body.dataset.sessionId;
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
-closeChatbot.addEventListener("click", () => {
-    chatbotWindow.classList.remove("active");
-});
-
-// Send message function
-function sendMessage() {
-    const message = chatbotInput.value.trim();
-    if (!message) return;
-
-    // Add user message
-    const userMsg = document.createElement("div");
-    userMsg.className = "chatbot-message user";
-    userMsg.textContent = message;
-    chatbotMessages.appendChild(userMsg);
-
-    // Clear input
-    chatbotInput.value = "";
-
-    // Scroll to bottom
-    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-
-    // Simulate bot response
-    setTimeout(() => {
-        const botMsg = document.createElement("div");
-        botMsg.className = "chatbot-message bot";
-
-        // Simple response logic
-        const lowerMessage = message.toLowerCase();
-        if (lowerMessage.includes("price") || lowerMessage.includes("cost")) {
-            botMsg.textContent =
-                "Our equipment ranges from $1,299 to $2,499. We also offer flexible financing options starting at $54/month. Would you like to know more about a specific product?";
-        } else if (
-            lowerMessage.includes("shipping") ||
-            lowerMessage.includes("delivery")
-        ) {
-            botMsg.textContent =
-                "We offer free white-glove delivery and installation on all equipment. Delivery typically takes 5-7 business days. Where are you located?";
-        } else if (lowerMessage.includes("warranty")) {
-            botMsg.textContent =
-                "All GymWithin equipment comes with a lifetime warranty on frames and a 5-year warranty on parts. We stand behind our quality!";
-        } else if (lowerMessage.includes("treadmill")) {
-            botMsg.textContent =
-                "Our Pro Treadmill X1 features advanced cushioning, smart tracking, and a powerful motor. It's perfect for serious runners. Would you like to schedule a demo?";
-        } else {
-            botMsg.textContent =
-                "Thanks for reaching out! Our team can help you with that. You can also call us at 1-800-GYM-WITHIN or email support@gymwithin.com. Is there anything specific I can help with?";
+// 1. Toggle Window (Restores the button functionality)
+if (chatbotButton && chatbotWindow) {
+    chatbotButton.addEventListener("click", () => {
+        chatbotWindow.classList.toggle("active");
+        if (chatbotWindow.classList.contains("active")) {
+            chatbotInput.focus();
         }
-
-        chatbotMessages.appendChild(botMsg);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-    }, 800);
+    });
 }
 
-// Send on button click
-chatbotSend.addEventListener("click", sendMessage);
+// 2. Function to load history from Database on page refresh
+async function loadChatHistory() {
+    if (!sessionId) return;
+    try {
+        const res = await fetch(`/chat/history/${sessionId}`);
+        const history = await res.json();
 
-// Send on Enter key
-chatbotInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-        sendMessage();
+        if (history.length > 0) {
+            chatbotMessages.innerHTML = ""; // Clear default welcome if history exists
+            history.forEach((msg) => appendMessageToUI(msg.role, msg.content));
+        }
+    } catch (e) {
+        console.error("History load failed", e);
     }
-});
+}
+
+// 3. Send Message logic
+async function sendMessage() {
+    const message = chatbotInput.value.trim();
+    const sessionId = document.body.getAttribute("data-session-id");
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content");
+
+    if (!message || !sessionId) return;
+
+    // UI: Add user message immediately
+    appendMessageToUI("user", message);
+    chatbotInput.value = "";
+
+    try {
+        const response = await fetch("/chat/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            body: JSON.stringify({
+                message: message,
+                session_id: sessionId,
+            }),
+        });
+
+        // Grab the JSON payload from Laravel regardless of status code
+        const data = await response.json();
+
+        // If the server crashed (500 error), throw the exact Laravel error
+        if (!response.ok) {
+            throw new Error(
+                data.reply || data.message || "Unknown server error",
+            );
+        }
+
+        appendMessageToUI("assistant", data.reply);
+    } catch (error) {
+        console.error("Chat Error:", error);
+        // This will now print the exact backend error in your chat window
+        appendMessageToUI("assistant", "Error: " + error.message);
+    }
+}
+
+// Helper to add messages to the window
+function appendMessageToUI(role, text) {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `chatbot-message ${role === "user" ? "user" : "bot"}`;
+    msgDiv.textContent = text;
+    chatbotMessages.appendChild(msgDiv);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+}
+
+// 1. Listen for the Send Button Click
+if (chatbotSend) {
+    chatbotSend.addEventListener("click", sendMessage);
+}
+
+// 2. Listen for the "Enter" key inside the input box
+if (chatbotInput) {
+    chatbotInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            sendMessage();
+        }
+    });
+}
+
+// 3. Initialize history on page load
+loadChatHistory();

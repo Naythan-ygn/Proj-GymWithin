@@ -1,18 +1,19 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\ProfileController;
 use App\Livewire\Admin\CategoryManager;
+use App\Livewire\Admin\OrderIndex;
 use App\Livewire\Admin\ProductForm;
 use App\Livewire\Admin\ProductIndex;
+use App\Livewire\Admin\StockVelocity;
 use App\Livewire\Admin\UserForm;
 use App\Livewire\Admin\UserIndex;
-use App\Livewire\User\UserDashboard;
-use App\Livewire\Admin\OrderIndex;
 use App\Livewire\User\OrderHistory;
-use App\Livewire\Admin\StockVelocity;
+use App\Livewire\User\UserDashboard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -24,13 +25,10 @@ Route::get('/', function () {
             ? redirect()->route('dashboard')
             : redirect()->route('user.home');
     }
-
     return view('welcome');
 })->name('home');
 
 Route::get('/equipment', [EquipmentController::class, 'index'])->name('equipment');
-
-// Route::get('/cart', ShoppingCart::class)->name('cart.index');
 
 Route::prefix('/cart')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
@@ -52,6 +50,11 @@ Route::get('/about', function () {
 Route::get('/contact', function () {
     return view('contact-us');
 })->name('contact');
+
+Route::prefix('/chat')->group(function () {
+    Route::post('/send', [ChatbotController::class, 'handleChat']);
+    Route::get('/history/{session_id}', [ChatbotController::class, 'getHistory']);
+});
 
 
 // Restricted Routes (Only for Logged-in Users)

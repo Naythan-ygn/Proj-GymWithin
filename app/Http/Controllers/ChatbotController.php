@@ -7,80 +7,118 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Database\QueryException;
 
 class ChatbotController extends Controller
 {
     public function handleChat(Request $request)
     {
-        $request->validate([
-            'message' => 'required|string',
-            'session_id' => 'required|string'
-        ]);
+        try {
+            $request->validate([
+                'message' => 'required|string',
+                'session_id' => 'required|string'
+            ]);
 
-        $userMessage = $request->input('message');
-        $sessionId = $request->input('session_id');
+            $sessionId = $request->input('session_id');
+            $userMessage = $request->input('message');
 
-        // 1. Log User Message
-        ChatMessage::create([
-            'session_id' => $sessionId,
-            'role' => 'user',
-            'content' => $userMessage
-        ]);
+            // Verify session is valid
+            if (empty($sessionId) || $sessionId === 'undefined') {
+                return response()->json(['reply' => 'Error: Session ID is missing.'], 400);
+            }
 
-        // 2. Fetch Context (Available Products)
-        $availableProducts = Product::where('stock', '>', 0)
-            ->select('name', 'price', 'description')
-            ->get()
-            ->toJson();
+            // 1. Save User Message
+            ChatMessage::create([
+                'session_id' => $sessionId,
+                'role' => 'user',
+                'content' => $userMessage
+            ]);
 
-        // 3. Construct System Prompt
-        $systemPrompt = "You are the GymWithin Assistant, a helpful sales and support bot for a premium fitness equipment store.
-        Be concise, friendly, and professional.
-        Here is the current real-time inventory of available products: {$availableProducts}.
-        Only recommend products that are in this list. If asked about a product not on the list, apologize and say it's currently out of stock.";
+            // 2. Build the message array with history and system prompt
+            $messages = $this->buildMessageHistory($sessionId);
 
-        // 4. Fetch Chat History
+            // 3. Call OpenRouter API
+            /** @var \Illuminate\Http\Client\Response $response */
+            $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . config('services.openrouter.key'),
+                    'Content-Type' => 'application/json',
+                ])
+                ->timeout(30)
+                ->post('https://openrouter.ai/api/v1/chat/completions', [
+                    'model' => 'google/gemini-2.0-flash-lite:free',
+                    'messages' => $messages,
+                ]);
+
+            if ($response->failed()) {
+                Log::error('OpenRouter API Error: ' . $response->body());
+                return response()->json(['reply' => 'AI Error: ' . $response->status() . ' - ' . $response->reason()], 500);
+            }
+
+            $botReply = $response->json('choices.0.message.content') ?? 'I could not generate a reply.';
+
+            // 4. Save Bot Response
+            ChatMessage::create([
+                'session_id' => $sessionId,
+                'role' => 'assistant',
+                'content' => $botReply
+            ]);
+
+            return response()->json(['reply' => $botReply]);
+
+        } catch (\Exception $e) {
+            // Log the exact PHP error so you can read it in storage/logs/laravel.log
+            Log::error('Chatbot Controller Exception: ' . $e->getMessage());
+            return response()->json(['reply' => 'Internal Server Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Helper method to generate the system prompt and pull chat history.
+     */
+    private function buildMessageHistory($sessionId)
+    {
+        try {
+            $availableProducts = Product::where('stock', '>', 0)
+                ->select('name', 'price', 'description')
+                ->get()
+                ->toJson();
+        } catch (\Exception $e) {
+            Log::warning('Chatbot Product Fetch Error: ' . $e->getMessage());
+            $availableProducts = "[]";
+        }
+
+        $systemPrompt = "You are the GymWithin Assistant. Inventory: {$availableProducts}.";
+
+        $messages = [['role' => 'system', 'content' => $systemPrompt]];
+
+        // Grab the last 10 messages for context
         $history = ChatMessage::where('session_id', $sessionId)
             ->orderBy('created_at', 'asc')
             ->take(10)
             ->get();
 
-        $messages = [['role' => 'system', 'content' => $systemPrompt]];
         foreach ($history as $msg) {
             $messages[] = ['role' => $msg->role, 'content' => $msg->content];
         }
 
-        // 5. Call OpenRouter API
-        /** @var \Illuminate\Http\Client\Response $response */
+        return $messages;
+    }
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . config('services.openrouter.key'),
-            'HTTP-Referer' => config('services.openrouter.url'),
-            'X-Title' => config('services.openrouter.name'),
-            'Content-Type' => 'application/json',
-        ])->post('https://openrouter.ai/api/v1/chat/completions', [
-                    'model' => 'google/gemini-2.5-flash-lite',
-                    'messages' => [
-                        ['role' => 'user', 'content' => $userMessage]
-                    ],
-                ]);
-
-        // Handle potential API errors gracefully
-        if ($response->failed()) {
-            Log::error('OpenRouter API Error: ' . $response->body());
-            return response()->json(['reply' => 'I am currently experiencing technical difficulties. Please try again later.']);
+    public function getHistory($sessionId)
+    {
+        if (empty($sessionId) || $sessionId === 'undefined') {
+            return response()->json(['error' => 'Missing session id'], 400);
         }
 
-        $botReply = $response->json('choices.0.message.content') ?? 'Sorry, I could not process that request.';
+        try {
+            $history = ChatMessage::where('session_id', $sessionId)
+                ->orderBy('created_at', 'asc')
+                ->get();
 
-        // 6. Log Bot Response
-        ChatMessage::create([
-            'session_id' => $sessionId,
-            'role' => 'assistant',
-            'content' => $botReply
-        ]);
-
-        return response()->json(['reply' => $botReply]);
+            return response()->json($history);
+        } catch (QueryException $e) {
+            return response()->json(['error' => 'Chat history unavailable'], 503);
+        }
     }
 }
