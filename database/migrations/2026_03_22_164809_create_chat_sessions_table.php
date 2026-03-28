@@ -6,20 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('chat_sessions', function (Blueprint $table) {
             $table->id();
+            $table->string('session_id')->unique(); // Store the PHP session ID
+            $table->unsignedBigInteger('user_id')->nullable(); // Optional: link to users
             $table->timestamps();
+
+            $table->index('session_id');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('chat_sessions');

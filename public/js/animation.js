@@ -144,9 +144,12 @@ scrollToTopBtn.addEventListener("click", () => {
 
 // --- Consolidated Chatbot Logic ---
 
+/// --- Consolidated Chatbot Logic ---
+
 // --- Unified Chatbot Logic ---
 const chatbotButton = document.getElementById("chatbotButton");
 const chatbotWindow = document.getElementById("chatbotWindow");
+const closeChatbotButton = document.getElementById("closeChatbot");
 const chatbotMessages = document.getElementById("chatbotMessages");
 const chatbotInput = document.getElementById("chatbotInput");
 const chatbotSend = document.getElementById("chatbotSend");
@@ -155,7 +158,7 @@ const chatbotSend = document.getElementById("chatbotSend");
 const sessionId = document.body.dataset.sessionId;
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
-// 1. Toggle Window (Restores the button functionality)
+// 1. Toggle Window (Open via main button)
 if (chatbotButton && chatbotWindow) {
     chatbotButton.addEventListener("click", () => {
         chatbotWindow.classList.toggle("active");
@@ -165,7 +168,26 @@ if (chatbotButton && chatbotWindow) {
     });
 }
 
-// 2. Function to load history from Database on page refresh
+// 2. Close button functionality
+if (closeChatbotButton && chatbotWindow) {
+    closeChatbotButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        chatbotWindow.classList.remove("active");
+    });
+}
+
+// 3. Optional: Click outside to close
+if (chatbotWindow && chatbotButton) {
+    document.addEventListener("click", (e) => {
+        if (chatbotWindow.classList.contains("active") &&
+            !chatbotWindow.contains(e.target) &&
+            !chatbotButton.contains(e.target)) {
+            chatbotWindow.classList.remove("active");
+        }
+    });
+}
+
+// 4. Function to load history from Database on page refresh
 async function loadChatHistory() {
     if (!sessionId) return;
     try {
@@ -173,7 +195,7 @@ async function loadChatHistory() {
         const history = await res.json();
 
         if (history.length > 0) {
-            chatbotMessages.innerHTML = ""; // Clear default welcome if history exists
+            chatbotMessages.innerHTML = "";
             history.forEach((msg) => appendMessageToUI(msg.role, msg.content));
         }
     } catch (e) {
@@ -181,7 +203,7 @@ async function loadChatHistory() {
     }
 }
 
-// 3. Send Message logic
+// 5. Send Message logic
 async function sendMessage() {
     const message = chatbotInput.value.trim();
     const sessionId = document.body.getAttribute("data-session-id");
@@ -191,7 +213,6 @@ async function sendMessage() {
 
     if (!message || !sessionId) return;
 
-    // UI: Add user message immediately
     appendMessageToUI("user", message);
     chatbotInput.value = "";
 
@@ -208,10 +229,8 @@ async function sendMessage() {
             }),
         });
 
-        // Grab the JSON payload from Laravel regardless of status code
         const data = await response.json();
 
-        // If the server crashed (500 error), throw the exact Laravel error
         if (!response.ok) {
             throw new Error(
                 data.reply || data.message || "Unknown server error",
@@ -221,7 +240,6 @@ async function sendMessage() {
         appendMessageToUI("assistant", data.reply);
     } catch (error) {
         console.error("Chat Error:", error);
-        // This will now print the exact backend error in your chat window
         appendMessageToUI("assistant", "Error: " + error.message);
     }
 }
@@ -235,12 +253,11 @@ function appendMessageToUI(role, text) {
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
 }
 
-// 1. Listen for the Send Button Click
+// 6. Event Listeners
 if (chatbotSend) {
     chatbotSend.addEventListener("click", sendMessage);
 }
 
-// 2. Listen for the "Enter" key inside the input box
 if (chatbotInput) {
     chatbotInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
@@ -249,5 +266,5 @@ if (chatbotInput) {
     });
 }
 
-// 3. Initialize history on page load
+// 7. Initialize history on page load
 loadChatHistory();

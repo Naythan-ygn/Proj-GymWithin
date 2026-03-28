@@ -6,23 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('chat_messages', function (Blueprint $table) {
             $table->id();
-            $table->string('session_id'); // Ties to the user's browser session
+            $table->string('session_id'); // Store the PHP session ID
             $table->enum('role', ['user', 'assistant']);
             $table->text('content');
             $table->timestamps();
+            
+            $table->index('session_id');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('chat_messages');

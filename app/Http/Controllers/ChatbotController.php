@@ -22,54 +22,95 @@ class ChatbotController extends Controller
             $sessionId = $request->input('session_id');
             $userMessage = $request->input('message');
 
-            // Verify session is valid
+            // Validate session ID
             if (empty($sessionId) || $sessionId === 'undefined') {
-                return response()->json(['reply' => 'Error: Session ID is missing.'], 400);
+                return response()->json(['reply' => 'Session ID is missing or invalid. Please refresh the page.'], 400);
             }
 
-            // 1. Save User Message
-            ChatMessage::create([
-                'session_id' => $sessionId,
-                'role' => 'user',
-                'content' => $userMessage
-            ]);
+            // Create or update chat session
+            \App\Models\ChatSession::updateOrCreate(
+                ['session_id' => $sessionId],
+                ['updated_at' => now()]
+            );
 
-            // 2. Build the message array with history and system prompt
+            // Save user message
+            try {
+                ChatMessage::create([
+                    'session_id' => $sessionId,
+                    'role' => 'user',
+                    'content' => $userMessage
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to save user message: ' . $e->getMessage());
+                // Continue even if save fails - don't block the chat
+            }
+
+            // Build message history
             $messages = $this->buildMessageHistory($sessionId);
 
-            // 3. Call OpenRouter API
-            /** @var \Illuminate\Http\Client\Response $response */
-            $response = Http::withoutVerifying()
-                ->withHeaders([
-                    'Authorization' => 'Bearer ' . config('services.openrouter.key'),
-                    'Content-Type' => 'application/json',
-                ])
-                ->timeout(30)
-                ->post('https://openrouter.ai/api/v1/chat/completions', [
-                    'model' => 'google/gemini-2.0-flash-lite:free',
-                    'messages' => $messages,
-                ]);
-
-            if ($response->failed()) {
-                Log::error('OpenRouter API Error: ' . $response->body());
-                return response()->json(['reply' => 'AI Error: ' . $response->status() . ' - ' . $response->reason()], 500);
+            // Prepare API messages
+            $apiMessages = [];
+            foreach ($messages as $msg) {
+                if (!empty($msg['content'])) {
+                    $apiMessages[] = [
+                        'role' => $msg['role'],
+                        'content' => (string)$msg['content']
+                    ];
+                }
             }
 
-            $botReply = $response->json('choices.0.message.content') ?? 'I could not generate a reply.';
-
-            // 4. Save Bot Response
-            ChatMessage::create([
-                'session_id' => $sessionId,
-                'role' => 'assistant',
-                'content' => $botReply
+            // Check if API key is configured
+            $apiKey = config('services.openrouter.key');
+            if (empty($apiKey)) {
+                Log::error('OpenRouter API key is not configured');
+                return response()->json(['reply' => 'Chat service is temporarily unavailable. Please try again later.'], 500);
+            }
+                
+            // Call OpenRouter API
+            /** @var \Illuminate\Http\Client\Response $response */
+            $response = Http::timeout(30)->withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type' => 'application/json',
+                'HTTP-Referer' => config('app.url'),
+                'X-Title' => 'GymWithin_Bot_v1',
+            ])->post('https://openrouter.ai/api/v1/chat/completions', [
+                'model' => 'openai/gpt-4o-mini',
+                'messages' => array_values($apiMessages),
             ]);
 
-            return response()->json(['reply' => $botReply]);
+            if ($response->failed()) {
+                $errorMessage = $response->json('error.message') ?? $response->status() . ' - ' . $response->reason();
+                Log::error('OpenRouter API Error: ' . $errorMessage);
+                return response()->json(['reply' => 'I\'m having trouble connecting right now. Please try again in a moment.'], 500);
+            }
 
+            $responseData = $response->json();
+
+            if (!isset($responseData['choices'][0]['message']['content'])) {
+                Log::error('OpenRouter API Response Missing Content: ' . json_encode($responseData));
+                return response()->json(['reply' => 'I received an unexpected response. Please try again.'], 500);
+            }
+
+            $botReply = $responseData['choices'][0]['message']['content'];
+
+            // Save bot response
+            try {
+                ChatMessage::create([
+                    'session_id' => $sessionId,
+                    'role' => 'assistant',
+                    'content' => $botReply
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to save bot message: ' . $e->getMessage());
+                // Continue - the user still gets their response
+            }
+
+            return response()->json(['reply' => $botReply]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['reply' => 'Invalid request. Please try again.'], 422);
         } catch (\Exception $e) {
-            // Log the exact PHP error so you can read it in storage/logs/laravel.log
-            Log::error('Chatbot Controller Exception: ' . $e->getMessage());
-            return response()->json(['reply' => 'Internal Server Error: ' . $e->getMessage()], 500);
+            Log::error('Chatbot Controller Exception: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return response()->json(['reply' => 'An internal error occurred. Our team has been notified.'], 500);
         }
     }
 
