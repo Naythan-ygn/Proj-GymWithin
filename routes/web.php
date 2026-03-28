@@ -123,6 +123,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('/create', UserForm::class)->name('create');
             Route::get('/{user}/edit', UserForm::class)->name('edit');
         });
+
+        // Admin AI Analytics Dashboard
+        Route::get('/ai-analytics', \App\Livewire\Admin\AIAnalyticsDashboard::class)
+            ->name('ai-analytics');
     });
 });
 

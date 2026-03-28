@@ -14,8 +14,13 @@ class Order extends Model
         'total_price',
         'shipping_address',
         'status',
+        'payment_method',
     ];
 
+    protected $casts = [
+        'total_price' => 'decimal:2',
+        'payment_method' => 'string',
+    ];
     /**
      * Define the relationship to the User (Customer)
      */

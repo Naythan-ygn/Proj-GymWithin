@@ -13,7 +13,7 @@
             <flux:sidebar.collapse class="lg:hidden" />
         </flux:sidebar.header>
 
-        <flux:sidebar.nav>
+        <flux:sidebar.group>
             {{-- Platform Management --}}
             <flux:sidebar.group :heading="__('Platform')" class="grid">
                 <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
@@ -29,10 +29,11 @@
 
             {{-- Store Management --}}
             <flux:sidebar.group :heading="__('Store')" class="grid">
-                <flux:sidebar.item icon="archive-box" :href="route('admin.inventory.index')" :current="request()->routeIs('admin.inventory.*')" wire:navigate>
+                <flux:sidebar.item icon="archive-box" :href="route('admin.inventory.index')"
+                    :current="request()->routeIs('admin.inventory.*')" wire:navigate>
                     {{ __('Inventory') }}
                 </flux:sidebar.item>
-                
+
                 <flux:sidebar.item icon="tag" :href="route('admin.categories.index')" wire:navigate>
                     {{ __('Categories') }}
                 </flux:sidebar.item>
@@ -55,8 +56,15 @@
                 </flux:sidebar.item>
             </flux:sidebar.group>
 
-        </flux:sidebar.nav>
-
+            {{-- AI Analytics Dashboard --}}
+            <flux:sidebar.group :heading="__('Analytics')" class="grid">
+                <flux:sidebar.item icon="chart-bar" :href="route('admin.ai-analytics')"
+                    :current="request()->routeIs('admin.ai-analytics')" wire:navigate>
+                    {{ __('AI Analytics') }}
+                </flux:sidebar.item>
+            </flux:sidebar.group>
+            
+        </flux:sidebar.group>
         <flux:spacer />
 
         <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />

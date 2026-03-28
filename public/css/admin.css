@@ -105,3 +105,60 @@ thead tr {
 .dark [flux-modal][variant="drawer"] .glass-modal-content {
     background: rgba(24, 24, 27, 0.98) !important; /* Zinc-900 deeper for focus */
 }
+
+/* Chart and Visualization Styles */
+.chart-bar {
+    transition: width 0.5s ease-out;
+}
+
+/* Donut Chart Style (for complaints distribution) */
+.donut-segment {
+    transition: stroke-dasharray 0.5s ease-out;
+}
+
+/* Line Chart Container */
+.chart-container {
+    position: relative;
+    height: 200px;
+    width: 100%;
+}
+
+/* Custom Scrollbar for Lists */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading-pulse {
+    animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
