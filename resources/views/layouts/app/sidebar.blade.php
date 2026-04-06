@@ -63,7 +63,7 @@
                     {{ __('AI Analytics') }}
                 </flux:sidebar.item>
             </flux:sidebar.group>
-            
+
         </flux:sidebar.group>
         <flux:spacer />
 
@@ -80,6 +80,13 @@
 
     <!-- Mobile User Menu -->
     <flux:header class="lg:hidden">
+        @if (session()->has('error'))
+            <div class="mx-4 mt-4">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+            </div>
+        @endif
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
         <flux:spacer />

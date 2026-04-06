@@ -17,9 +17,19 @@
             </flux:select>
 
             <flux:button wire:click="exportToExcel" variant="primary" icon="document-arrow-down"
-                wire:loading.attr="disabled">
+                wire:loading.attr="disabled" wire:target="exportToExcel" class="cursor-pointer">
                 <span wire:loading.remove wire:target="exportToExcel">Export to Excel</span>
-                <span wire:loading wire:target="exportToExcel">Exporting...</span>
+                <span wire:loading wire:target="exportToExcel">
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    Generating Excel Report...
+                </span>
             </flux:button>
         </div>
     </div>
@@ -50,21 +60,18 @@
                 $title = array_shift($lines);
             @endphp
 
-            <div
-                class="relative rounded-xl border border-zinc-200 dark:border-zinc-700 
-                    bg-zinc-50 dark:bg-zinc-800/50 p-4 overflow-hidden
-                    hover:-translate-y-0.5 transition-transform duration-200">
+            <div class="relative rounded-xl border border-zinc-200 dark:border-zinc-700
+                            bg-zinc-50 dark:bg-zinc-800/50 p-4 overflow-hidden
+                            hover:-translate-y-0.5 transition-transform duration-200">
 
                 {{-- Hover Gradient --}}
-                <div
-                    class="absolute inset-0 rounded-xl opacity-0 hover:opacity-100 transition 
-                        bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-indigo-500/10">
+                <div class="absolute inset-0 rounded-xl opacity-0 hover:opacity-100 transition
+                                bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-indigo-500/10">
                 </div>
 
                 {{-- Left Accent --}}
-                <div
-                    class="absolute left-0 top-0 h-full w-1 
-                        bg-gradient-to-b from-purple-500 to-pink-500 rounded-l-xl">
+                <div class="absolute left-0 top-0 h-full w-1
+                                bg-gradient-to-b from-purple-500 to-pink-500 rounded-l-xl">
                 </div>
 
                 <div class="relative z-10 pl-2">
@@ -112,8 +119,7 @@
                         @foreach ($mostAskedProducts['mentioned']->take(5) as $productName => $mentionCount)
                             <div>
                                 <div class="flex justify-between text-sm mb-1">
-                                    <span
-                                        class="font-medium text-zinc-900 dark:text-zinc-100">{{ $productName }}</span>
+                                    <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ $productName }}</span>
                                     <span class="text-zinc-500">{{ $mentionCount }} mentions</span>
                                 </div>
                                 <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2">
@@ -131,12 +137,14 @@
                                     <div class="flex justify-between items-center py-2">
                                         <div>
                                             <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                                                {{ $product['name'] }}</p>
+                                                {{ $product['name'] }}
+                                            </p>
                                             <p class="text-xs text-zinc-500">SKU: {{ $product['sku'] }}</p>
                                         </div>
                                         <div class="text-right">
                                             <p class="text-sm font-semibold text-green-600 dark:text-green-400">
-                                                {{ $product['quantity_sold'] }} sold</p>
+                                                {{ $product['quantity_sold'] }} sold
+                                            </p>
                                             <p class="text-xs text-zinc-500">
                                                 ${{ number_format($product['revenue'], 2) }}</p>
                                         </div>
@@ -195,7 +203,8 @@
                             @foreach ($customerComplaints['recent_complaints'] as $complaint)
                                 <div class="text-sm p-2 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
                                     <p class="text-zinc-700 dark:text-zinc-300 line-clamp-2">
-                                        {{ $complaint['message'] }}</p>
+                                        {{ $complaint['message'] }}
+                                    </p>
                                     <p class="text-xs text-zinc-400 mt-1">{{ $complaint['date']->diffForHumans() }}</p>
                                 </div>
                             @endforeach
@@ -252,12 +261,14 @@
                         <div>
                             <p class="text-xs text-zinc-500">Peak Usage Time</p>
                             <p class="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-                                {{ $chatbotUsage['peak_hours']['peak_hour'] }}</p>
+                                {{ $chatbotUsage['peak_hours']['peak_hour'] }}
+                            </p>
                         </div>
                         <div class="text-right">
                             <p class="text-xs text-zinc-500">Messages at peak</p>
                             <p class="text-lg font-bold text-blue-500">
-                                {{ $chatbotUsage['peak_hours']['peak_hour_count'] }}</p>
+                                {{ $chatbotUsage['peak_hours']['peak_hour_count'] }}
+                            </p>
                         </div>
                     </div>
                 </div>
