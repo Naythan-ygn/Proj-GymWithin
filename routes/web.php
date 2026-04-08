@@ -10,6 +10,7 @@ use App\Livewire\Admin\OrderIndex;
 use App\Livewire\Admin\ProductForm;
 use App\Livewire\Admin\ProductIndex;
 use App\Livewire\Admin\StockVelocity;
+use App\Livewire\Admin\SuperDashboard;
 use App\Livewire\Admin\UserForm;
 use App\Livewire\Admin\UserIndex;
 use App\Livewire\User\OrderHistory;
@@ -92,7 +93,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
 
     // Admin Dashboard
-    Route::view('dashboard', 'admin.dashboard')
+    Route::get('/dashboard', SuperDashboard::class)
         ->middleware(['verified'])
         ->name('dashboard');
 

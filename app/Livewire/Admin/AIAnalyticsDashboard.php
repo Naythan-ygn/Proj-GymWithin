@@ -77,12 +77,10 @@ class AIAnalyticsDashboard extends Component
 
     private function getMostAskedProducts($dateFilter)
     {
-        // Return cached data if available
         if ($this->cachedMostAskedProducts !== null) {
             return $this->cachedMostAskedProducts;
         }
 
-        // Get products mentioned in chatbot conversations
         $mentionedProducts = ChatMessage::where('created_at', '>=', $dateFilter)
             ->where('role', 'user')
             ->get()
@@ -97,7 +95,6 @@ class AIAnalyticsDashboard extends Component
             ->sortDesc()
             ->take(10);
 
-        // Get actual sales data for top products
         $topSellingProducts = OrderItem::whereHas('order', function ($query) use ($dateFilter) {
             $query->where('created_at', '>=', $dateFilter)
                 ->where('status', '!=', 'cancelled');
@@ -124,7 +121,6 @@ class AIAnalyticsDashboard extends Component
             'top_selling' => $topSellingProducts,
         ];
 
-        // Cache the result
         $this->cachedMostAskedProducts = $result;
 
         return $result;
@@ -132,32 +128,15 @@ class AIAnalyticsDashboard extends Component
 
     private function getCustomerComplaints($dateFilter)
     {
-        // Return cached data if available
         if ($this->cachedCustomerComplaints !== null) {
             return $this->cachedCustomerComplaints;
         }
 
         $complaintKeywords = [
-            'broken',
-            'defective',
-            'damaged',
-            'not working',
-            'doesn\'t work',
-            'poor quality',
-            'disappointed',
-            'terrible',
-            'awful',
-            'worst',
-            'complaint',
-            'refund',
-            'return',
-            'exchange',
-            'frustrated',
-            'angry',
-            'unhappy',
-            'dissatisfied',
-            'issue',
-            'problem'
+            'broken', 'defective', 'damaged', 'not working', 'doesn\'t work',
+            'poor quality', 'disappointed', 'terrible', 'awful', 'worst',
+            'complaint', 'refund', 'return', 'exchange', 'frustrated',
+            'angry', 'unhappy', 'dissatisfied', 'issue', 'problem'
         ];
 
         $complaints = ChatMessage::where('created_at', '>=', $dateFilter)
@@ -173,7 +152,6 @@ class AIAnalyticsDashboard extends Component
                 return false;
             });
 
-        // Categorize complaints
         $categories = [
             'Product Quality' => ['broken', 'defective', 'damaged', 'poor quality', 'not working'],
             'Shipping Issues' => ['shipping', 'delivery', 'arrived', 'late', 'damaged in shipping'],
@@ -213,7 +191,6 @@ class AIAnalyticsDashboard extends Component
             }),
         ];
 
-        // Cache the result
         $this->cachedCustomerComplaints = $result;
 
         return $result;
@@ -221,7 +198,6 @@ class AIAnalyticsDashboard extends Component
 
     private function getChatbotUsage($dateFilter)
     {
-        // Return cached data if available
         if ($this->cachedChatbotUsage !== null) {
             return $this->cachedChatbotUsage;
         }
@@ -232,7 +208,6 @@ class AIAnalyticsDashboard extends Component
         $assistantMessages = $chatMessages->where('role', 'assistant')->count();
         $uniqueSessions = $chatMessages->unique('session_id')->count();
 
-        // Get daily usage trend
         $dailyUsage = $chatMessages->groupBy(function ($msg) {
             return $msg->created_at->format('Y-m-d');
         })->map(function ($messages, $date) {
@@ -243,7 +218,6 @@ class AIAnalyticsDashboard extends Component
             ];
         })->sortKeys()->take(30);
 
-        // Get user engagement metrics
         $sessionLengths = $chatMessages->groupBy('session_id')
             ->map(function ($messages) {
                 return $messages->count();
@@ -266,7 +240,6 @@ class AIAnalyticsDashboard extends Component
             'peak_hours' => $this->getPeakHours($chatMessages),
         ];
 
-        // Cache the result
         $this->cachedChatbotUsage = $result;
 
         return $result;
@@ -274,12 +247,10 @@ class AIAnalyticsDashboard extends Component
 
     private function getCustomerRetention($dateFilter)
     {
-        // Return cached data if available
         if ($this->cachedCustomerRetention !== null) {
             return $this->cachedCustomerRetention;
         }
 
-        // Get new vs returning customers
         $newCustomers = User::where('created_at', '>=', $dateFilter)->count();
         $totalCustomers = User::count();
 
@@ -297,10 +268,8 @@ class AIAnalyticsDashboard extends Component
                 return $userOrders->count() > 1;
             })->count();
 
-        // Calculate retention rate over time
         $retentionByCohort = $this->calculateCohortRetention();
 
-        // Customer lifetime value
         $customerLTV = Order::where('status', '!=', 'cancelled')
             ->groupBy('user_id')
             ->select('user_id', DB::raw('SUM(total_price) as total_spent'))
@@ -322,7 +291,6 @@ class AIAnalyticsDashboard extends Component
             'customer_ltv' => round($customerLTV, 2),
         ];
 
-        // Cache the result
         $this->cachedCustomerRetention = $result;
 
         return $result;
@@ -366,7 +334,6 @@ class AIAnalyticsDashboard extends Component
     {
         $cohorts = [];
 
-        // Get customers by month of first purchase
         $firstPurchases = Order::where('status', '!=', 'cancelled')
             ->select('user_id', DB::raw('MIN(created_at) as first_purchase_date'))
             ->groupBy('user_id')
@@ -379,7 +346,6 @@ class AIAnalyticsDashboard extends Component
         foreach ($cohortsByMonth as $cohort => $customers) {
             $customerIds = $customers->pluck('user_id');
 
-            // Calculate retention for months 1, 2, 3
             $retention = [];
             for ($i = 1; $i <= 3; $i++) {
                 $monthAgo = Carbon::parse($cohort . '-01')->addMonths($i);
@@ -397,7 +363,7 @@ class AIAnalyticsDashboard extends Component
             $cohorts[$cohort] = $retention;
         }
 
-        return array_slice($cohorts, -6, 6, true); // Last 6 cohorts
+        return array_slice($cohorts, -6, 6, true);
     }
 
     private function extractProductMentions($message)
@@ -474,6 +440,9 @@ class AIAnalyticsDashboard extends Component
         ];
     }
 
+    /**
+     * FIXED: Export actual dashboard data instead of formatted analysis sheets
+     */
     public function exportToExcel()
     {
         $dateFilter = $this->getDateFilter();
@@ -484,24 +453,17 @@ class AIAnalyticsDashboard extends Component
         $chatbotUsage = $this->getChatbotUsage($dateFilter);
         $customerRetention = $this->getCustomerRetention($dateFilter);
 
-        // Create comprehensive sheets
-        $productDemandSheet = $this->formatProductDemandSheet($mostAskedProducts);
-        $complaintsSheet = $this->formatComplaintsSheet($customerComplaints);
-        $chatbotSheet = $this->formatChatbotSheet($chatbotUsage);
-        $retentionSheet = $this->formatRetentionSheet($customerRetention);
-        $aiInsightsSheet = $this->formatAIInsightsSheet();
-
+        // Create sheets with ACTUAL DATA from the dashboard
         $sheets = new SheetCollection([
-            '1. AI Insights' => $aiInsightsSheet,
-            '2. Product Demand' => $productDemandSheet,
-            '3. Customer Complaints' => $complaintsSheet,
-            '4. Chatbot Usage' => $chatbotSheet,
-            '5. Customer Retention' => $retentionSheet,
+            '1. AI Insights' => $this->formatAIInsightsSheet(),
+            '2. Most Asked Products' => $this->formatMostAskedProductsSheet($mostAskedProducts),
+            '3. Customer Complaints' => $this->formatCustomerComplaintsSheet($customerComplaints),
+            '4. Chatbot Usage' => $this->formatChatbotUsageSheet($chatbotUsage),
+            '5. Customer Retention' => $this->formatCustomerRetentionSheet($customerRetention),
         ]);
 
         $filename = 'ai-analytics-dashboard-' . now()->format('Y-m-d-His') . '.xlsx';
 
-        // Clean output buffers before download
         if (ob_get_length()) {
             ob_end_clean();
         }
@@ -509,31 +471,30 @@ class AIAnalyticsDashboard extends Component
         return (new FastExcel($sheets))->download($filename);
     }
 
+    /**
+     * FIXED: Sheet 1 - AI Insights (keeping this as is, it's good)
+     */
     private function formatAIInsightsSheet()
     {
         $data = collect();
 
-        // Parse AI insights content
         $content = $this->aiInsights['content'] ?? '';
         $sections = preg_split('/\n\s*\n/', trim($content));
 
         $first = count($sections) > 0 ? array_shift($sections) : null;
         $last = count($sections) > 0 ? array_pop($sections) : null;
 
-        // Add header
         $data->push(['AI Analytics Dashboard Insights', '']);
         $data->push(['Generated on:', now()->format('F j, Y g:i A')]);
         $data->push(['Date Range:', ucwords(str_replace('_', ' ', $this->dateRange))]);
         $data->push(['', '']);
 
-        // Add subtitle
         if ($first) {
             $data->push(['OVERVIEW', '']);
             $data->push([trim(str_replace('###', '', $first)), '']);
             $data->push(['', '']);
         }
 
-        // Add main insights
         $data->push(['KEY INSIGHTS', '']);
         foreach ($sections as $section) {
             $lines = explode("\n", trim($section));
@@ -546,7 +507,6 @@ class AIAnalyticsDashboard extends Component
             $data->push(['', '']);
         }
 
-        // Add footer
         if ($last) {
             $data->push(['RECOMMENDATIONS', '']);
             $data->push([$last, '']);
@@ -555,326 +515,193 @@ class AIAnalyticsDashboard extends Component
         return $data;
     }
 
-    private function formatProductDemandSheet($mostAskedProducts)
+    /**
+     * FIXED: Sheet 2 - Most Asked Products (actual data from the card)
+     */
+    private function formatMostAskedProductsSheet($mostAskedProducts)
     {
         $data = collect();
 
-        // Title section
-        $data->push(['PRODUCT DEMAND ANALYSIS', '']);
+        // Header
+        $data->push(['MOST ASKED PRODUCTS (Chatbot Mentions)', '']);
+        $data->push(['Generated on:', now()->format('F j, Y g:i A')]);
+        $data->push(['Date Range:', ucwords(str_replace('_', ' ', $this->dateRange))]);
         $data->push(['', '']);
 
-        // Most Asked Products Section
-        $data->push(['MOST ASKED PRODUCTS (Chatbot Mentions)', '']);
-        $data->push(['Product Name', 'Mention Count', 'Popularity Score']);
-
+        // Most Asked Products Table (matches the card display)
+        $data->push(['Most Asked Products', 'Mention Count', 'Percentage of Top']);
         if ($mostAskedProducts['mentioned']->isNotEmpty()) {
             $maxMentions = $mostAskedProducts['mentioned']->first();
             foreach ($mostAskedProducts['mentioned'] as $productName => $mentionCount) {
-                $popularityScore = round(($mentionCount / $maxMentions) * 100, 1);
-                $data->push([
-                    $productName,
-                    $mentionCount,
-                    $popularityScore . '%'
-                ]);
+                $percentage = round(($mentionCount / $maxMentions) * 100, 1);
+                $data->push([$productName, $mentionCount, $percentage . '%']);
             }
         } else {
-            $data->push(['No product mentions found', '0', '0%']);
+            $data->push(['No product mentions found', 0, '0%']);
         }
 
         $data->push(['', '']);
 
-        // Top Selling Products Section
-        $data->push(['TOP SELLING PRODUCTS (Same Period)', '']);
-        $data->push(['Product Name', 'SKU', 'Quantity Sold', 'Revenue', 'Average Price']);
-
+        // Top Selling Products Table (matches the card display)
+        $data->push(['Top Selling Products (Same Period)', 'SKU', 'Quantity Sold', 'Revenue']);
         if ($mostAskedProducts['top_selling']->isNotEmpty()) {
             foreach ($mostAskedProducts['top_selling'] as $product) {
-                $avgPrice = $product['quantity_sold'] > 0
-                    ? round($product['revenue'] / $product['quantity_sold'], 2)
-                    : 0;
                 $data->push([
                     $product['name'],
                     $product['sku'],
                     $product['quantity_sold'],
-                    '$' . number_format($product['revenue'], 2),
-                    '$' . number_format($avgPrice, 2)
+                    '$' . number_format($product['revenue'], 2)
                 ]);
             }
         } else {
-            $data->push(['No selling data available', '', '0', '$0', '$0']);
-        }
-
-        $data->push(['', '']);
-
-        // Gap Analysis (Products asked but not selling well)
-        $data->push(['DEMAND VS SALES GAP ANALYSIS', '']);
-        $data->push(['Product Name', 'Mentions', 'Sales Rank', 'Opportunity Score']);
-
-        $mentionedProducts = $mostAskedProducts['mentioned']->keys()->toArray();
-        $sellingProducts = $mostAskedProducts['top_selling']->pluck('name')->toArray();
-        $gapProducts = array_diff($mentionedProducts, $sellingProducts);
-
-        if (!empty($gapProducts)) {
-            foreach (array_slice($gapProducts, 0, 10) as $product) {
-                $mentions = $mostAskedProducts['mentioned'][$product];
-                $data->push([
-                    $product,
-                    $mentions,
-                    'Not in top 10 selling',
-                    'High - Investigate why not selling'
-                ]);
-            }
-        } else {
-            $data->push(['No significant gaps found', '', '', '']);
+            $data->push(['No selling data available', '', 0, '$0']);
         }
 
         return $data;
     }
 
-    private function formatComplaintsSheet($customerComplaints)
+    /**
+     * FIXED: Sheet 3 - Customer Complaints (actual data from the card)
+     */
+    private function formatCustomerComplaintsSheet($customerComplaints)
     {
         $data = collect();
 
-        // Title section
-        $data->push(['CUSTOMER COMPLAINTS ANALYSIS', '']);
+        // Header
+        $data->push(['CUSTOMER COMPLAINTS', '']);
         $data->push(['Generated on:', now()->format('F j, Y g:i A')]);
+        $data->push(['Date Range:', ucwords(str_replace('_', ' ', $this->dateRange))]);
         $data->push(['', '']);
 
-        // Summary Section
-        $data->push(['SUMMARY STATISTICS', '']);
+        // Summary (matches card header)
+        $data->push(['Summary', '']);
         $data->push(['Total Complaints', $customerComplaints['total_complaints']]);
         $data->push(['Complaint Rate', $customerComplaints['complaint_rate'] . '% of conversations']);
         $data->push(['', '']);
 
-        // Complaint Categories Distribution
-        $data->push(['COMPLAINTS BY CATEGORY', '']);
-        $data->push(['Category', 'Number of Complaints', 'Percentage', 'Severity Level']);
-
+        // Complaints by Category (matches the bar chart in the card)
+        $data->push(['Complaints by Category', 'Count', 'Percentage of Total']);
         if ($customerComplaints['total_complaints'] > 0) {
             foreach ($customerComplaints['by_category'] as $category => $count) {
-                $percentage = round(($count / $customerComplaints['total_complaints']) * 100, 1);
-                $severity = $this->getSeverityLevel($category, $percentage);
-                $data->push([
-                    $category,
-                    $count,
-                    $percentage . '%',
-                    $severity
-                ]);
+                $percentage = round(($count / max($customerComplaints['by_category'])) * 100, 1);
+                $data->push([$category, $count, $percentage . '%']);
             }
         } else {
-            $data->push(['No complaints recorded', '0', '0%', 'N/A']);
+            foreach (array_keys($customerComplaints['by_category']) as $category) {
+                $data->push([$category, 0, '0%']);
+            }
         }
 
         $data->push(['', '']);
-        $data->push(['TOTAL', $customerComplaints['total_complaints'], '100%', '']);
-        $data->push(['', '']);
 
-        // Recent Complaints
-        $data->push(['RECENT COMPLAINTS (Last 5)', '']);
-        $data->push(['Date/Time', 'Complaint Message', 'Category (Auto-detected)']);
-
+        // Recent Complaints (matches the card's recent complaints list)
+        $data->push(['Recent Complaints', 'Date', '']);
         if ($customerComplaints['recent_complaints']->isNotEmpty()) {
             foreach ($customerComplaints['recent_complaints'] as $complaint) {
-                $category = $this->detectComplaintCategory($complaint['message']);
                 $data->push([
-                    $complaint['date']->format('Y-m-d H:i:s'),
                     $complaint['message'],
-                    $category
+                    $complaint['date']->format('Y-m-d H:i:s'),
+                    ''
                 ]);
             }
         } else {
             $data->push(['No recent complaints', '', '']);
         }
 
-        $data->push(['', '']);
-
-        // Action Items
-        $data->push(['RECOMMENDED ACTIONS', '']);
-        $data->push(['Priority', 'Action Item', 'Expected Impact']);
-
-        $topCategory = collect($customerComplaints['by_category'])->sortDesc()->keys()->first();
-        if ($topCategory && $customerComplaints['total_complaints'] > 0) {
-            $data->push(['HIGH', "Address {$topCategory} complaints - most common issue", 'Reduce complaints by 20-30%']);
-            $data->push(['MEDIUM', 'Review customer service response templates', 'Improve resolution time']);
-            $data->push(['MEDIUM', 'Analyze refund/return process efficiency', 'Increase customer satisfaction']);
-        }
-
         return $data;
     }
 
-    private function formatChatbotSheet($chatbotUsage)
+    /**
+     * FIXED: Sheet 4 - Chatbot Usage (actual data from the card)
+     */
+    private function formatChatbotUsageSheet($chatbotUsage)
     {
         $data = collect();
 
-        // Title section
-        $data->push(['CHATBOT USAGE ANALYTICS', '']);
+        // Header
+        $data->push(['CHATBOT USAGE', '']);
         $data->push(['Generated on:', now()->format('F j, Y g:i A')]);
+        $data->push(['Date Range:', ucwords(str_replace('_', ' ', $this->dateRange))]);
         $data->push(['', '']);
 
-        // Key Metrics
-        $data->push(['KEY PERFORMANCE METRICS', '']);
-        $data->push(['Metric', 'Value', 'Benchmark', 'Status']);
-
-        $metrics = [
-            ['Total Conversations', $chatbotUsage['unique_sessions'], 'N/A', ''],
-            ['Total Messages', $chatbotUsage['total_messages'], 'N/A', ''],
-            ['User Messages', $chatbotUsage['user_messages'], 'N/A', ''],
-            ['Assistant Messages', $chatbotUsage['assistant_messages'], 'N/A', ''],
-            ['Avg Messages/Session', $chatbotUsage['avg_messages_per_session'], '5-10', $chatbotUsage['avg_messages_per_session'] >= 5 ? 'Good' : 'Needs Improvement'],
-            ['Avg Session Duration', $chatbotUsage['avg_session_duration'] . ' min', '2-5 min', $chatbotUsage['avg_session_duration'] >= 2 ? 'Good' : 'Low Engagement'],
-        ];
-
-        foreach ($metrics as $metric) {
-            $data->push($metric);
-        }
-
+        // Key Metrics (matches the card's metrics display)
+        $data->push(['Key Metrics', '']);
+        $data->push(['Total Conversations', $chatbotUsage['unique_sessions']]);
+        $data->push(['Avg Messages per Session', $chatbotUsage['avg_messages_per_session']]);
+        $data->push(['Total Messages', $chatbotUsage['total_messages']]);
+        $data->push(['User Messages', $chatbotUsage['user_messages']]);
+        $data->push(['Assistant Messages', $chatbotUsage['assistant_messages']]);
+        $data->push(['Avg Session Duration', $chatbotUsage['avg_session_duration'] . ' minutes']);
         $data->push(['', '']);
 
-        // Session Length Distribution
-        $data->push(['SESSION LENGTH DISTRIBUTION', '']);
-        $data->push(['Session Length Range', 'Number of Sessions', 'Percentage', 'Engagement Level']);
-
+        // Session Length Distribution (matches the card's distribution)
+        $data->push(['Session Length Distribution', 'Number of Sessions', 'Percentage']);
         $totalSessions = $chatbotUsage['unique_sessions'];
         foreach ($chatbotUsage['session_length_distribution'] as $range => $count) {
             $percentage = $totalSessions > 0 ? round(($count / $totalSessions) * 100, 1) : 0;
-            $engagement = $this->getEngagementLevel($range);
-            $data->push([$range, $count, $percentage . '%', $engagement]);
+            $data->push([$range, $count, $percentage . '%']);
         }
 
         $data->push(['', '']);
 
-        // Peak Hours Analysis
-        $data->push(['PEAK USAGE ANALYSIS', '']);
+        // Peak Hours (matches the card's peak hours display)
+        $data->push(['Peak Usage Time', '']);
         $data->push(['Peak Hour', $chatbotUsage['peak_hours']['peak_hour']]);
-        $data->push(['Messages During Peak', $chatbotUsage['peak_hours']['peak_hour_count']]);
-        $data->push(['', '']);
-
-        // Hourly Distribution
-        $data->push(['HOURLY DISTRIBUTION', '']);
-        $data->push(['Hour', 'Message Count', 'Usage Pattern']);
-
-        if (!empty($chatbotUsage['peak_hours']['distribution'])) {
-            foreach ($chatbotUsage['peak_hours']['distribution'] as $hour => $count) {
-                $hourFormatted = date('g A', strtotime($hour . ':00'));
-                $pattern = $this->getUsagePattern($hour, $chatbotUsage['peak_hours']['peak_hour']);
-                $data->push([$hourFormatted, $count, $pattern]);
-            }
-        }
-
-        $data->push(['', '']);
-
-        // Optimization Suggestions
-        $data->push(['OPTIMIZATION SUGGESTIONS', '']);
-        $data->push(['Area', 'Suggestion', 'Priority']);
-
-        if ($chatbotUsage['avg_messages_per_session'] < 5) {
-            $data->push(['Engagement', 'Add proactive suggestions to increase conversation length', 'HIGH']);
-        }
-        if ($chatbotUsage['avg_session_duration'] < 2) {
-            $data->push(['Retention', 'Improve response quality to keep users engaged', 'MEDIUM']);
-        }
-        $data->push(['Staffing', "Increase support during {$chatbotUsage['peak_hours']['peak_hour']}", 'MEDIUM']);
-        $data->push(['Features', 'Consider adding quick reply buttons for common queries', 'LOW']);
+        $data->push(['Messages at Peak', $chatbotUsage['peak_hours']['peak_hour_count']]);
 
         return $data;
     }
 
-    private function formatRetentionSheet($customerRetention)
+    /**
+     * FIXED: Sheet 5 - Customer Retention (actual data from the card)
+     */
+    private function formatCustomerRetentionSheet($customerRetention)
     {
         $data = collect();
 
-        // Title section
-        $data->push(['CUSTOMER RETENTION ANALYSIS', '']);
+        // Header
+        $data->push(['CUSTOMER RETENTION', '']);
         $data->push(['Generated on:', now()->format('F j, Y g:i A')]);
+        $data->push(['Date Range:', ucwords(str_replace('_', ' ', $this->dateRange))]);
         $data->push(['', '']);
 
-        // Key Metrics
-        $data->push(['KEY RETENTION METRICS', '']);
-        $data->push(['Metric', 'Value', 'Industry Benchmark', 'Performance']);
-
-        $performance = $customerRetention['retention_rate'] >= 30 ? 'Excellent' : ($customerRetention['retention_rate'] >= 20 ? 'Average' : 'Needs Improvement');
-        $repeatPerformance = $customerRetention['repeat_purchase_rate'] >= 40 ? 'Excellent' : ($customerRetention['repeat_purchase_rate'] >= 25 ? 'Average' : 'Needs Improvement');
-
-        $data->push(['Retention Rate', $customerRetention['retention_rate'] . '%', '20-30%', $performance]);
-        $data->push(['Repeat Purchase Rate', $customerRetention['repeat_purchase_rate'] . '%', '25-40%', $repeatPerformance]);
-        $data->push(['Average Customer LTV', '$' . number_format($customerRetention['customer_ltv'], 2), 'N/A', '']);
+        // Key Metrics (matches the card's metrics)
+        $data->push(['Key Metrics', '']);
+        $data->push(['Retention Rate', $customerRetention['retention_rate'] . '%']);
+        $data->push(['Repeat Purchase Rate', $customerRetention['repeat_purchase_rate'] . '%']);
+        $data->push(['Average Customer LTV', '$' . number_format($customerRetention['customer_ltv'], 2)]);
         $data->push(['', '']);
 
-        // Customer Segments
-        $data->push(['CUSTOMER SEGMENTATION', '']);
-        $data->push(['Segment', 'Count', 'Percentage', 'Action Priority']);
-
-        $totalCustomers = $customerRetention['total_customers'];
-        $newCustomersPct = $totalCustomers > 0 ? round(($customerRetention['new_customers'] / $totalCustomers) * 100, 1) : 0;
-        $repeatPct = $totalCustomers > 0 ? round(($customerRetention['repeat_customers'] / $totalCustomers) * 100, 1) : 0;
-        $firstTimePct = $customerRetention['first_time_buyers'] > 0 ? round(($customerRetention['first_time_buyers'] / ($customerRetention['first_time_buyers'] + $customerRetention['repeat_customers'])) * 100, 1) : 0;
-
-        $data->push(['New Customers (Registered)', $customerRetention['new_customers'], $newCustomersPct . '%', 'Nurture']);
-        $data->push(['First-Time Buyers', $customerRetention['first_time_buyers'], $firstTimePct . '% of buyers', 'Convert to repeat']);
-        $data->push(['Repeat Customers', $customerRetention['repeat_customers'], $repeatPct . '%', 'Reward loyalty']);
-        $data->push(['Total Customers', $customerRetention['total_customers'], '100%', '']);
-
+        // Customer Segments (matches the card's segments)
+        $data->push(['Customer Segments', 'Count']);
+        $data->push(['New Customers', $customerRetention['new_customers']]);
+        $data->push(['First-Time Buyers', $customerRetention['first_time_buyers']]);
+        $data->push(['Repeat Customers', $customerRetention['repeat_customers']]);
+        $data->push(['Total Customers', $customerRetention['total_customers']]);
         $data->push(['', '']);
 
-        // Retention by Cohort
+        // Retention by Cohort (matches the card's cohort display)
         if (!empty($customerRetention['retention_by_cohort'])) {
-            $data->push(['RETENTION BY COHORT (Last 6 Months)', '']);
-            $data->push(['Cohort (Month)', 'Month 1 Retention', 'Month 2 Retention', 'Month 3 Retention', 'Trend']);
-
-            foreach ($customerRetention['retention_by_cohort'] as $cohort => $retention) {
-                $trend = $this->getRetentionTrend($retention);
+            $data->push(['Retention by Cohort', 'Month 1 Retention', 'Month 2 Retention', 'Month 3 Retention']);
+            foreach (array_slice($customerRetention['retention_by_cohort'], -3, 3, true) as $cohort => $retention) {
                 $data->push([
                     $cohort,
                     ($retention['month_1'] ?? 0) . '%',
                     ($retention['month_2'] ?? 0) . '%',
-                    ($retention['month_3'] ?? 0) . '%',
-                    $trend
+                    ($retention['month_3'] ?? 0) . '%'
                 ]);
             }
-        }
-
-        $data->push(['', '']);
-
-        // Actionable Recommendations
-        $data->push(['RETENTION STRATEGY RECOMMENDATIONS', '']);
-        $data->push(['Strategy', 'Target Segment', 'Expected ROI', 'Implementation Effort']);
-
-        $recommendations = [];
-
-        if ($customerRetention['retention_rate'] < 25) {
-            $recommendations[] = ['Loyalty Program', 'All Customers', 'High', 'Medium'];
-            $recommendations[] = ['Post-Purchase Email Series', 'First-Time Buyers', 'Medium', 'Low'];
-        }
-
-        if ($customerRetention['repeat_purchase_rate'] < 30) {
-            $recommendations[] = ['Personalized Product Recommendations', 'Repeat Customers', 'High', 'Medium'];
-        }
-
-        if ($customerRetention['customer_ltv'] < 100) {
-            $recommendations[] = ['Upsell/Cross-sell Campaigns', 'All Customers', 'Medium', 'Medium'];
-        }
-
-        if (empty($recommendations)) {
-            $recommendations[] = ['Referral Program', 'Repeat Customers', 'High', 'Low'];
-            $recommendations[] = ['Birthday/Anniversary Discounts', 'Loyal Customers', 'Medium', 'Low'];
-        }
-
-        foreach ($recommendations as $rec) {
-            $data->push($rec);
         }
 
         return $data;
     }
 
-    // Helper methods for formatting
+    // Helper methods for formatting (keep existing ones)
     private function getSeverityLevel($category, $percentage)
     {
-        if ($percentage > 30)
-            return 'Critical';
-        if ($percentage > 20)
-            return 'High';
-        if ($percentage > 10)
-            return 'Medium';
+        if ($percentage > 30) return 'Critical';
+        if ($percentage > 20) return 'High';
+        if ($percentage > 10) return 'Medium';
         return 'Low';
     }
 
@@ -914,13 +741,10 @@ class AIAnalyticsDashboard extends Component
 
     private function getUsagePattern($hour, $peakHour)
     {
-        if ($hour == $peakHour)
-            return 'Peak';
+        if ($hour == $peakHour) return 'Peak';
         $hourInt = (int) $hour;
-        if ($hourInt >= 9 && $hourInt <= 17)
-            return 'Business Hours';
-        if ($hourInt >= 18 && $hourInt <= 22)
-            return 'Evening';
+        if ($hourInt >= 9 && $hourInt <= 17) return 'Business Hours';
+        if ($hourInt >= 18 && $hourInt <= 22) return 'Evening';
         return 'Off-Hours';
     }
 
@@ -930,12 +754,9 @@ class AIAnalyticsDashboard extends Component
         $month2 = $retention['month_2'] ?? 0;
         $month3 = $retention['month_3'] ?? 0;
 
-        if ($month1 > $month2 && $month2 > $month3)
-            return 'Declining';
-        if ($month1 < $month2 && $month2 < $month3)
-            return 'Improving';
-        if ($month1 == $month2 && $month2 == $month3)
-            return 'Stable';
+        if ($month1 > $month2 && $month2 > $month3) return 'Declining';
+        if ($month1 < $month2 && $month2 < $month3) return 'Improving';
+        if ($month1 == $month2 && $month2 == $month3) return 'Stable';
         return 'Fluctuating';
     }
 
