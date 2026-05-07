@@ -1,4 +1,24 @@
 <section class="bg-black text-white min-h-auto py-20 relative">
+    @if (!empty($paymentToasts))
+        <div x-data="{ toasts: @js($paymentToasts) }" class="fixed right-4 top-20 z-[10050] space-y-3 w-[min(24rem,calc(100vw-2rem))]">
+            <template x-for="(toast, index) in toasts" :key="`${toast.order_number}-${index}`">
+                <div x-data="{ show: true }"
+                    x-init="setTimeout(() => show = false, 4500); setTimeout(() => { toasts.splice(index, 1) }, 5000)"
+                    x-show="show" x-transition
+                    class="rounded-2xl border px-5 py-4 shadow-2xl"
+                    :class="toast.payment_status === 'approved'
+                        ? 'border-green-500/30 bg-green-500/10 text-green-100'
+                        : 'border-red-500/30 bg-red-500/10 text-red-100'">
+                    <p class="font-semibold" x-text="`Order #${toast.order_number} payment ${toast.payment_status}.`"></p>
+                    <p class="mt-1 text-sm opacity-90"
+                        x-text="toast.payment_notes || (toast.payment_status === 'approved'
+                            ? 'Your payment was accepted.'
+                            : 'Your uploaded receipt was rejected.')"></p>
+                </div>
+            </template>
+        </div>
+    @endif
+
     {{-- Global Loading Spinner: Shows when ANY wire:target "showOrder" is active --}}
     <div wire:loading wire:target="showOrder"
         class="fixed inset-0 z-[10001] flex items-center justify-center bg-black/60 backdrop-blur-md">
@@ -39,6 +59,13 @@
                                 <p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Total</p>
                                 <p class="font-black text-2xl text-white">${{ number_format($order->total_price, 2) }}
                                 </p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Payment</p>
+                                <span
+                                    class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $order->payment_status === 'approved' ? 'bg-green-500/15 text-green-300' : ($order->payment_status === 'rejected' ? 'bg-red-500/15 text-red-300' : 'bg-amber-500/15 text-amber-300') }}">
+                                    {{ ucfirst($order->payment_status) }}
+                                </span>
                             </div>
                             <div
                                 class="size-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-orange-500 transition-all">
@@ -107,6 +134,18 @@
                     </div>
 
                     <div class="mt-8 pt-6 border-t border-white/10">
+                        <div class="mb-4 flex items-center justify-between">
+                            <span class="text-zinc-400">Payment Status</span>
+                            <span
+                                class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $this->selectedOrder->payment_status === 'approved' ? 'bg-green-500/15 text-green-300' : ($this->selectedOrder->payment_status === 'rejected' ? 'bg-red-500/15 text-red-300' : 'bg-amber-500/15 text-amber-300') }}">
+                                {{ ucfirst($this->selectedOrder->payment_status) }}
+                            </span>
+                        </div>
+                        @if ($this->selectedOrder->payment_notes)
+                            <div class="mb-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-zinc-300">
+                                {{ $this->selectedOrder->payment_notes }}
+                            </div>
+                        @endif
                         <div class="flex justify-between text-white text-xl font-black">
                             <span>Total Paid</span>
                             <span

@@ -18,6 +18,33 @@ class OrderHistory extends Component
     use WithPagination;
 
     public $selectedOrderId = null; // Store just the ID
+    public $paymentToasts = [];
+
+    public function mount(): void
+    {
+        $unseenOrders = Order::query()
+            ->where('user_id', Auth::id())
+            ->whereIn('payment_status', ['approved', 'rejected'])
+            ->whereNotNull('payment_reviewed_at')
+            ->whereNull('payment_notification_seen_at')
+            ->latest('payment_reviewed_at')
+            ->take(3)
+            ->get();
+
+        $this->paymentToasts = $unseenOrders
+            ->map(fn($order) => [
+                'order_number' => $order->order_number,
+                'payment_status' => $order->payment_status,
+                'payment_notes' => $order->payment_notes,
+            ])
+            ->values()
+            ->all();
+
+        if ($unseenOrders->isNotEmpty()) {
+            Order::whereIn('id', $unseenOrders->pluck('id'))
+                ->update(['payment_notification_seen_at' => now()]);
+        }
+    }
 
     public function showOrder($id)
     {
@@ -28,13 +55,14 @@ class OrderHistory extends Component
     #[Computed]
     public function selectedOrder()
     {
-        return \App\Models\Order::with(['items.product'])->find($this->selectedOrderId);
+        return \App\Models\Order::with(['items.product', 'transaction'])->find($this->selectedOrderId);
     }
 
     public function render()
     {
         return view('livewire.user.order-history', [
             'orders' => Order::where('user_id', Auth::id())
+                ->with('transaction')
                 ->latest()
                 ->paginate(5),
         ]);

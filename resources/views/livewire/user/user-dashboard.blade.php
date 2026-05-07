@@ -1,4 +1,24 @@
 <div>
+    @if (!empty($paymentToasts))
+        <div x-data="{ toasts: @js($paymentToasts) }" class="fixed right-4 top-20 z-[10050] space-y-3 w-[min(24rem,calc(100vw-2rem))]">
+            <template x-for="(toast, index) in toasts" :key="`${toast.order_number}-${index}`">
+                <div x-data="{ show: true }"
+                    x-init="setTimeout(() => show = false, 4500); setTimeout(() => { toasts.splice(index, 1) }, 5000)"
+                    x-show="show" x-transition
+                    class="rounded-2xl border px-5 py-4 shadow-2xl"
+                    :class="toast.payment_status === 'approved'
+                        ? 'border-green-500/30 bg-green-500/10 text-green-100'
+                        : 'border-red-500/30 bg-red-500/10 text-red-100'">
+                    <p class="font-semibold" x-text="`Order #${toast.order_number} payment ${toast.payment_status}.`"></p>
+                    <p class="mt-1 text-sm opacity-90"
+                        x-text="toast.payment_notes || (toast.payment_status === 'approved'
+                            ? 'Your order is confirmed and ready for fulfillment.'
+                            : 'Please contact support or upload a clearer receipt.')"></p>
+                </div>
+            </template>
+        </div>
+    @endif
+
     {{-- Hero Section --}}
     <section class="equipment-hero relative" style="height: 40vh; min-height: 350px;">
         <div class="container mx-auto px-4 z-10 relative">
@@ -17,6 +37,11 @@
     {{-- Main Dashboard Content --}}
     <section class="bg-black text-white py-12 min-h-screen" id="user-dashboard">
         <div class="container mx-auto px-4">
+            @if (session('success'))
+                <div class="mb-8 rounded-2xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-green-100">
+                    {{ session('success') }}
+                </div>
+            @endif
 
             {{-- Categories Row --}}
             <div class="mb-16 fade-in" data-fade>

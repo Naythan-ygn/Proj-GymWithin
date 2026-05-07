@@ -11,6 +11,7 @@ use App\Livewire\Admin\ProductForm;
 use App\Livewire\Admin\ProductIndex;
 use App\Livewire\Admin\StockVelocity;
 use App\Livewire\Admin\SuperDashboard;
+use App\Livewire\Admin\TransactionIndex;
 use App\Livewire\Admin\UserForm;
 use App\Livewire\Admin\UserIndex;
 use App\Livewire\User\OrderHistory;
@@ -76,7 +77,10 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('/checkout')->name('checkout.')->group(function () {
         Route::post('/process', [CheckoutController::class, 'process'])->name('process');
         Route::get('/success/{order_number}', function ($order_number) {
-            return view('partials.checkout.success', compact('order_number'));
+            $order = \App\Models\Order::where('order_number', $order_number)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
+            return view('partials.checkout.success', compact('order'));
         })->name('success');
     });
 
@@ -117,6 +121,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
         // Admin Order Monitoring View
         Route::get('/orders', OrderIndex::class)->name('orders.index');
+
+        // Admin Payment Transactions
+        Route::get('/transactions', TransactionIndex::class)->name('transactions.index');
 
         // Admin User Management
         Route::prefix('/users')->name('users.')->group(function () {

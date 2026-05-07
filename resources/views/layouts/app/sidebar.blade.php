@@ -54,6 +54,19 @@
                         </flux:badge>
                     @endif
                 </flux:sidebar.item>
+
+                <flux:sidebar.item icon="credit-card" :href="route('admin.transactions.index')"
+                    :current="request()->routeIs('admin.transactions.*')" wire:navigate>
+                    {{ __('Tracsactions') }}
+                    @php
+                        $pendingTransactions = \App\Models\Transaction::where('status', 'pending')->count();
+                    @endphp
+                    @if ($pendingTransactions > 0)
+                        <flux:badge size="sm" color="orange" inset="top bottom" class="ml-auto">
+                            {{ $pendingTransactions }}
+                        </flux:badge>
+                    @endif
+                </flux:sidebar.item>
             </flux:sidebar.group>
 
             {{-- AI Analytics Dashboard --}}

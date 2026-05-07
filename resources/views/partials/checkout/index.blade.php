@@ -24,7 +24,8 @@
                         <i class="fas fa-truck text-orange-500"></i> Shipping Information
                     </h2>
 
-                    <form action="{{ route('checkout.process') }}" method="POST" class="space-y-6">
+                    <form action="{{ route('checkout.process') }}" method="POST" enctype="multipart/form-data"
+                        class="space-y-6">
                         @csrf
                         <div>
                             <label class="block text-sm font-medium text-zinc-400 mb-2">Full Name</label>
@@ -42,19 +43,50 @@
 
                         <div class="pt-4">
                             <h3 class="text-lg font-semibold mb-4">Payment Method</h3>
-                            <div class="p-4 rounded-xl border border-orange-500/50 bg-orange-500/5 flex items-center gap-4">
-                                <i class="fas fa-money-bill-wave text-orange-500"></i>
-                                <div>
-                                    <p class="font-bold text-sm">Cash on Delivery (COD)</p>
-                                    <p class="text-xs text-zinc-400">Pay when your equipment arrives.</p>
+                            <div class="p-5 rounded-2xl border border-orange-500/50 bg-orange-500/5 space-y-4">
+                                <div class="flex items-center gap-4">
+                                    <i class="fas fa-building-columns text-orange-500"></i>
+                                    <div>
+                                        <p class="font-bold text-sm">Bank Transfer</p>
+                                        <p class="text-xs text-zinc-400">Transfer the full amount and upload your transaction screenshot below.</p>
+                                    </div>
+                                    <i class="fas fa-check-circle ml-auto text-orange-500"></i>
                                 </div>
-                                <i class="fas fa-check-circle ml-auto text-orange-500"></i>
+
+                                <div class="grid gap-3 md:grid-cols-3 text-sm">
+                                    <div class="rounded-xl bg-black/30 p-4 border border-white/10">
+                                        <p class="text-zinc-500 text-xs uppercase tracking-wider mb-1">Bank Name</p>
+                                        <p class="font-semibold">{{ $bankDetails['bank_name'] }}</p>
+                                    </div>
+                                    <div class="rounded-xl bg-black/30 p-4 border border-white/10">
+                                        <p class="text-zinc-500 text-xs uppercase tracking-wider mb-1">Account Name</p>
+                                        <p class="font-semibold">{{ $bankDetails['account_name'] }}</p>
+                                    </div>
+                                    <div class="rounded-xl bg-black/30 p-4 border border-white/10">
+                                        <p class="text-zinc-500 text-xs uppercase tracking-wider mb-1">Account Number</p>
+                                        <p class="font-semibold">{{ $bankDetails['account_number'] }}</p>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs text-zinc-400">{{ $bankDetails['instructions'] }}</p>
                             </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-400 mb-2">Transaction Screenshot</label>
+                            <input type="file" name="payment_screenshot" accept="image/*" required
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition outline-none file:mr-4 file:rounded-full file:border-0 file:bg-orange-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-orange-600">
+                            <p class="text-xs text-zinc-500 mt-2">Accepted formats: JPG, PNG, WEBP. Max size: 5MB.</p>
+                            @error('payment_screenshot') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100">
+                            Your order stays in payment review until an admin approves the uploaded receipt.
                         </div>
 
                         <button type="submit"
                             class="w-full py-4 rounded-full bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white font-bold text-lg hover:opacity-90 transition transform hover:scale-[1.01]">
-                            Place Order (${{ number_format($total, 2) }})
+                            Submit Order & Receipt (${{ number_format($total, 2) }})
                         </button>
                     </form>
                 </div>
