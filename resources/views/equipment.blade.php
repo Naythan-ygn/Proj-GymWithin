@@ -69,8 +69,8 @@
                             @endif
 
                             <div class="product-image-wrapper">
-                                {{-- Ensure images exist in public/Equipment/ --}}
-                                <img src="{{ asset('Equipment/' . $item['image']) }}" alt="{{ $item['name'] }}">
+                                <img src="{{ $item->image_path ? asset('storage/' . $item->image_path) : 'https://placehold.co/400' }}"
+                                    alt="{{ $item->name }}">
                             </div>
 
                             <div class="product-details">

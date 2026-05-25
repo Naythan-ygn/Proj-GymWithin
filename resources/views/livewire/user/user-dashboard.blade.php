@@ -1,19 +1,17 @@
 <div>
     @if (!empty($paymentToasts))
-        <div x-data="{ toasts: @js($paymentToasts) }" class="fixed right-4 top-20 z-[10050] space-y-3 w-[min(24rem,calc(100vw-2rem))]">
+        <div x-data="{ toasts: @js($paymentToasts) }"
+            class="fixed right-4 top-20 z-[10050] space-y-3 w-[min(24rem,calc(100vw-2rem))]">
             <template x-for="(toast, index) in toasts" :key="`${toast.order_number}-${index}`">
                 <div x-data="{ show: true }"
                     x-init="setTimeout(() => show = false, 4500); setTimeout(() => { toasts.splice(index, 1) }, 5000)"
-                    x-show="show" x-transition
-                    class="rounded-2xl border px-5 py-4 shadow-2xl"
-                    :class="toast.payment_status === 'approved'
-                        ? 'border-green-500/30 bg-green-500/10 text-green-100'
-                        : 'border-red-500/30 bg-red-500/10 text-red-100'">
+                    x-show="show" x-transition class="rounded-2xl border px-5 py-4 shadow-2xl" :class="toast.payment_status === 'approved'
+                            ? 'border-green-500/30 bg-green-500/10 text-green-100'
+                            : 'border-red-500/30 bg-red-500/10 text-red-100'">
                     <p class="font-semibold" x-text="`Order #${toast.order_number} payment ${toast.payment_status}.`"></p>
-                    <p class="mt-1 text-sm opacity-90"
-                        x-text="toast.payment_notes || (toast.payment_status === 'approved'
-                            ? 'Your order is confirmed and ready for fulfillment.'
-                            : 'Please contact support or upload a clearer receipt.')"></p>
+                    <p class="mt-1 text-sm opacity-90" x-text="toast.payment_notes || (toast.payment_status === 'approved'
+                                ? 'Your order is confirmed and ready for fulfillment.'
+                                : 'Please contact support or upload a clearer receipt.')"></p>
                 </div>
             </template>
         </div>
@@ -73,7 +71,8 @@
                         <div class="product-card fade-in" data-fade>
                             <div class="price-badge">${{ number_format($item->price, 2) }}</div>
                             <div class="product-image-wrapper">
-                                <img src="{{ asset('Equipment/' . $item->image) }}" alt="{{ $item->name }}">
+                                <img src="{{ $item->image_path ? asset('storage/' . $item->image_path) : 'https://placehold.co/400' }}"
+                                    alt="{{ $item->name }}">
                             </div>
                             <div class="product-details">
                                 <p class="text-xs text-orange-500 font-semibold mb-1 uppercase tracking-wider">

@@ -36,29 +36,26 @@
             </p>
         </div>
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-            @php
-                $products = [
-                    ['name' => 'Pro Treadmill X1', 'price' => '$2,499', 'emoji' => '🏃', 'desc' => 'AI tracking.'],
-                    ['name' => 'PowerRack Elite', 'price' => '$1,899', 'emoji' => '💪', 'desc' => 'Steel build.'],
-                    ['name' => 'Spin Cycle Pro', 'price' => '$1,299', 'emoji' => '🚴', 'desc' => 'Magnetic res.']
-                ];
-            @endphp
-
-            @foreach($products as $product)
+            @forelse($featuredProducts as $product)
                 <div class="glass-card rounded-3xl overflow-hidden group fade-in" data-fade>
-                    <div class="aspect-square flex items-center justify-center text-8xl">
-                        {{ $product['emoji'] }}
+                    <div class="aspect-square flex items-center justify-center text-8xl bg-white/5">
+                        <span class="text-5xl">🏋️</span>
                     </div>
                     <div class="p-4">
-                        <h3 class="text-2xl font-bold mb-2">{{ $product['name'] }}</h3>
-                        <p class="text-gray-400 mb-6">{{ $product['desc'] }}</p>
-                        <div class="flex items-center justify-between">
-                            <span class="text-3xl font-bold">{{ $product['price'] }}</span>
-                            <button class="bg-white text-black px-6 py-2 rounded-full font-semibold">Learn More</button>
+                        <h3 class="text-2xl font-bold mb-2">{{ $product->name }}</h3>
+                        <p class="text-gray-400 mb-6">{{ \Illuminate\Support\Str::limit($product->description, 80) }}</p>
+                        <div class="flex items-center justify-between gap-4">
+                            <span class="text-3xl font-bold">${{ number_format($product->price, 2) }}</span>
+                            <a href="{{ route('products.show', $product->sku) }}"
+                                class="bg-white text-black px-6 py-2 rounded-full font-semibold">View</a>
                         </div>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="col-span-full text-center text-gray-400 py-16">
+                    No featured products are available right now. Visit the equipment page to browse our collection.
+                </div>
+            @endforelse
         </div>
     </section>
 

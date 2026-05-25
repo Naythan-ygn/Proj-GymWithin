@@ -16,6 +16,7 @@ use App\Livewire\Admin\UserForm;
 use App\Livewire\Admin\UserIndex;
 use App\Livewire\User\OrderHistory;
 use App\Livewire\User\UserDashboard;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -27,10 +28,17 @@ Route::get('/', function () {
             ? redirect()->route('dashboard')
             : redirect()->route('user.home');
     }
-    return view('welcome');
+
+    $featuredProducts = Product::with('category')
+        ->latest()
+        ->take(3)
+        ->get();
+
+    return view('welcome', compact('featuredProducts'));
 })->name('home');
 
 Route::get('/equipment', [EquipmentController::class, 'index'])->name('equipment');
+Route::get('/equipment/{product:sku}', [EquipmentController::class, 'show'])->name('products.show');
 
 Route::prefix('/cart')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
@@ -69,9 +77,6 @@ Route::middleware(['auth'])->group(function () {
 
     // User Order History
     Route::get('/my-orders', OrderHistory::class)->name('user.orders');
-
-    // Product Detail Page (Accessible to all, but can show more details if logged in)
-    Route::get('/equipment/{product:sku}', [EquipmentController::class, 'show'])->name('products.show');
 
     // Checkout
     Route::prefix('/checkout')->name('checkout.')->group(function () {
