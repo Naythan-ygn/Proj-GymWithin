@@ -1,19 +1,17 @@
 <section class="bg-black text-white min-h-auto py-20 relative">
     @if (!empty($paymentToasts))
-        <div x-data="{ toasts: @js($paymentToasts) }" class="fixed right-4 top-20 z-[10050] space-y-3 w-[min(24rem,calc(100vw-2rem))]">
+        <div x-data="{ toasts: @js($paymentToasts) }"
+            class="fixed right-4 top-20 z-[10050] space-y-3 w-[min(24rem,calc(100vw-2rem))]">
             <template x-for="(toast, index) in toasts" :key="`${toast.order_number}-${index}`">
                 <div x-data="{ show: true }"
                     x-init="setTimeout(() => show = false, 4500); setTimeout(() => { toasts.splice(index, 1) }, 5000)"
-                    x-show="show" x-transition
-                    class="rounded-2xl border px-5 py-4 shadow-2xl"
-                    :class="toast.payment_status === 'approved'
-                        ? 'border-green-500/30 bg-green-500/10 text-green-100'
-                        : 'border-red-500/30 bg-red-500/10 text-red-100'">
+                    x-show="show" x-transition class="rounded-2xl border px-5 py-4 shadow-2xl" :class="toast.payment_status === 'approved'
+                            ? 'border-green-500/30 bg-green-500/10 text-green-100'
+                            : 'border-red-500/30 bg-red-500/10 text-red-100'">
                     <p class="font-semibold" x-text="`Order #${toast.order_number} payment ${toast.payment_status}.`"></p>
-                    <p class="mt-1 text-sm opacity-90"
-                        x-text="toast.payment_notes || (toast.payment_status === 'approved'
-                            ? 'Your payment was accepted.'
-                            : 'Your uploaded receipt was rejected.')"></p>
+                    <p class="mt-1 text-sm opacity-90" x-text="toast.payment_notes || (toast.payment_status === 'approved'
+                                ? 'Your payment was accepted.'
+                                : 'Your uploaded receipt was rejected.')"></p>
                 </div>
             </template>
         </div>
@@ -88,7 +86,7 @@
 
     {{-- Modal Overlay --}}
     @if ($this->selectedOrder)
-        <div x-data="{ show: true }" x-init="$watch('show', value => { if (!value) $wire.set('selectedOrderId', null) })"
+        <div x-data="{ show: true }" x-init="$watch('show', value => { if (!value) $wire.set('selectedOrder', null) })"
             class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
 
             {{-- 1. Dark Backdrop --}}
@@ -148,8 +146,7 @@
                         @endif
                         <div class="flex justify-between text-white text-xl font-black">
                             <span>Total Paid</span>
-                            <span
-                                class="text-orange-500">${{ number_format($this->selectedOrder->total_price, 2) }}</span>
+                            <span class="text-orange-500">${{ number_format($this->selectedOrder->total_price, 2) }}</span>
                         </div>
                     </div>
                 </div>

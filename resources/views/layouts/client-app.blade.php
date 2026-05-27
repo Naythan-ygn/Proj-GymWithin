@@ -10,7 +10,7 @@
 
     @vite('resources/css/app.css')
     <script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -19,8 +19,9 @@
     @livewireStyles
 
     <style>
-        /* This class is applied immediately, preventing the flash */
-        .loading-shield {
+        /* Applied to elements that should be hidden until JS animations run */
+        .loading-shield,
+        .js-hide {
             opacity: 0 !important;
             transform: translateY(20px);
         }
@@ -31,13 +32,23 @@
         }
     </style>
     <script>
-        // Safety Valve: If the animation doesn't run in 2 seconds, show everything
-        setTimeout(() => {
-            document.querySelectorAll('.js-hide').forEach(el => {
+        // Reveal function used by animations and as a safety fallback
+        function revealLoadingShields() {
+            document.querySelectorAll('.js-hide, .loading-shield, [x-cloak]').forEach(el => {
+                // Prefer using the class removal so transitions apply
+                el.classList.remove('loading-shield');
+                el.classList.remove('js-hide');
+                // Ensure final styles for older browsers
                 el.style.opacity = '1';
                 el.style.transform = 'none';
             });
-        }, 2000);
+        }
+
+        // Try to reveal on DOM ready (fast path)
+        document.addEventListener('DOMContentLoaded', revealLoadingShields);
+
+        // Safety Valve: If the animation doesn't run in 2 seconds, show everything
+        setTimeout(revealLoadingShields, 2000);
     </script>
 </head>
 

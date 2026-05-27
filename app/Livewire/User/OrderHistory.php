@@ -18,6 +18,7 @@ class OrderHistory extends Component
     use WithPagination;
 
     public $selectedOrderId = null; // Store just the ID
+    public $selectedOrder = null; // Store the loaded Order model for the modal
     public $paymentToasts = [];
 
     public function mount(): void
@@ -49,13 +50,12 @@ class OrderHistory extends Component
     public function showOrder($id)
     {
         $this->selectedOrderId = $id;
+        $this->selectedOrder = Order::with(['items.product', 'transaction'])->find($id);
     }
-
-    // Add a Computed Property for the view
-    #[Computed]
-    public function selectedOrder()
+    public function closeOrder()
     {
-        return \App\Models\Order::with(['items.product', 'transaction'])->find($this->selectedOrderId);
+        $this->selectedOrderId = null;
+        $this->selectedOrder = null;
     }
 
     public function render()
