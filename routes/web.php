@@ -63,6 +63,7 @@ Route::get('/contact', function () {
 
 Route::prefix('/chat')->group(function () {
     Route::post('/send', [ChatbotController::class, 'handleChat']);
+    Route::post('/action', [ChatbotController::class, 'handleAction']);
     Route::get('/history/{session_id}', [ChatbotController::class, 'getHistory']);
 });
 

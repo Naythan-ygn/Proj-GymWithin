@@ -133,10 +133,26 @@ class AIAnalyticsDashboard extends Component
         }
 
         $complaintKeywords = [
-            'broken', 'defective', 'damaged', 'not working', 'doesn\'t work',
-            'poor quality', 'disappointed', 'terrible', 'awful', 'worst',
-            'complaint', 'refund', 'return', 'exchange', 'frustrated',
-            'angry', 'unhappy', 'dissatisfied', 'issue', 'problem'
+            'broken',
+            'defective',
+            'damaged',
+            'not working',
+            'doesn\'t work',
+            'poor quality',
+            'disappointed',
+            'terrible',
+            'awful',
+            'worst',
+            'complaint',
+            'refund',
+            'return',
+            'exchange',
+            'frustrated',
+            'angry',
+            'unhappy',
+            'dissatisfied',
+            'issue',
+            'problem'
         ];
 
         $complaints = ChatMessage::where('created_at', '>=', $dateFilter)
@@ -340,7 +356,9 @@ class AIAnalyticsDashboard extends Component
             ->get();
 
         $cohortsByMonth = $firstPurchases->groupBy(function ($purchase) {
-            return $purchase->first_purchase_date->format('Y-m');
+            // first_purchase_date comes from a DB MIN(...) raw select and may be a string,
+            // ensure it's parsed to a Carbon instance before formatting.
+            return Carbon::parse($purchase->first_purchase_date)->format('Y-m');
         });
 
         foreach ($cohortsByMonth as $cohort => $customers) {
@@ -699,9 +717,12 @@ class AIAnalyticsDashboard extends Component
     // Helper methods for formatting (keep existing ones)
     private function getSeverityLevel($category, $percentage)
     {
-        if ($percentage > 30) return 'Critical';
-        if ($percentage > 20) return 'High';
-        if ($percentage > 10) return 'Medium';
+        if ($percentage > 30)
+            return 'Critical';
+        if ($percentage > 20)
+            return 'High';
+        if ($percentage > 10)
+            return 'Medium';
         return 'Low';
     }
 
@@ -741,10 +762,13 @@ class AIAnalyticsDashboard extends Component
 
     private function getUsagePattern($hour, $peakHour)
     {
-        if ($hour == $peakHour) return 'Peak';
+        if ($hour == $peakHour)
+            return 'Peak';
         $hourInt = (int) $hour;
-        if ($hourInt >= 9 && $hourInt <= 17) return 'Business Hours';
-        if ($hourInt >= 18 && $hourInt <= 22) return 'Evening';
+        if ($hourInt >= 9 && $hourInt <= 17)
+            return 'Business Hours';
+        if ($hourInt >= 18 && $hourInt <= 22)
+            return 'Evening';
         return 'Off-Hours';
     }
 
@@ -754,9 +778,12 @@ class AIAnalyticsDashboard extends Component
         $month2 = $retention['month_2'] ?? 0;
         $month3 = $retention['month_3'] ?? 0;
 
-        if ($month1 > $month2 && $month2 > $month3) return 'Declining';
-        if ($month1 < $month2 && $month2 < $month3) return 'Improving';
-        if ($month1 == $month2 && $month2 == $month3) return 'Stable';
+        if ($month1 > $month2 && $month2 > $month3)
+            return 'Declining';
+        if ($month1 < $month2 && $month2 < $month3)
+            return 'Improving';
+        if ($month1 == $month2 && $month2 == $month3)
+            return 'Stable';
         return 'Fluctuating';
     }
 
