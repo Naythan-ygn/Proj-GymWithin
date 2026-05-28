@@ -3,6 +3,7 @@
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\ProfileController;
 use App\Livewire\Admin\CategoryManager;
@@ -48,6 +49,7 @@ Route::prefix('/cart')->name('cart.')->group(function () {
 });
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 Route::get('/benefits', function () {
     return view('benefits');

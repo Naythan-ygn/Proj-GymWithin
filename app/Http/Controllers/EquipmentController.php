@@ -11,10 +11,11 @@ class EquipmentController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Get the category slug from the URL (e.g., ?category=apparel)
+        // 1. Get the category slug and search query from the URL
         $categorySlug = $request->query('category');
+        $search = trim($request->query('search', ''));
 
-        // 2. Fetch products, optionally filtered by category
+        // 2. Fetch products, optionally filtered by category and search text
         $query = Product::query()->with('category');
 
         if ($categorySlug) {
@@ -23,13 +24,20 @@ class EquipmentController extends Controller
             });
         }
 
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
         $products = $query->latest()->get();
 
         // 3. Fetch all categories for the sidebar
         $categories = Category::all();
 
-        // Pass 'products' instead of 'equipment' to match the updated view
-        return view('equipment', compact('products', 'categories'));
+        return view('equipment', compact('products', 'categories', 'search'));
     }
 
     public function show(Product $product)

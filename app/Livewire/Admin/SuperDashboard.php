@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\ChatMessage;
+use App\Models\CustomerComplaint;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -163,22 +165,114 @@ class SuperDashboard extends Component
 
     public function mostAskedProducts()
     {
-        // TODO: Replace with your actual chatbot query
-        return collect([
-            ['name' => 'Protein Powder', 'mentions' => 45],
-            ['name' => 'Dumbbell Set', 'mentions' => 32],
-            ['name' => 'Yoga Mat', 'mentions' => 28],
-            ['name' => 'Resistance Bands', 'mentions' => 19],
-        ]);
+        $startDate = Carbon::now()->subDays($this->selectedDays);
+
+        $products = Product::all(['id', 'name', 'sku']);
+        if ($products->isEmpty()) {
+            return collect();
+        }
+
+        $chatMessages = ChatMessage::where('role', 'user')
+            ->where('created_at', '>=', $startDate)
+            ->get();
+
+        if ($chatMessages->isEmpty()) {
+            return collect();
+        }
+
+        $mentionCounts = [];
+
+        foreach ($chatMessages as $message) {
+            $foundProducts = $this->extractProductMentions($message->content, $products);
+
+            foreach ($foundProducts as $productId => $productData) {
+                $mentionCounts[$productId] = [
+                    'name' => $productData['name'],
+                    'sku' => $productData['sku'],
+                    'mentions' => ($mentionCounts[$productId]['mentions'] ?? 0) + 1,
+                ];
+            }
+        }
+
+        return collect($mentionCounts)
+            ->sortByDesc('mentions')
+            ->take(5)
+            ->values();
     }
 
     public function recentComplaints()
     {
-        // TODO: Replace with your actual complaints query
-        return collect([
-            ['message' => 'Shipping took too long, expected 3 days but got 10 days', 'date' => Carbon::now()->subDays(2)],
-            ['message' => 'Product arrived damaged, box was crushed', 'date' => Carbon::now()->subDays(5)],
-        ]);
+        $startDate = Carbon::now()->subDays($this->selectedDays);
+
+        $complaintKeywords = [
+            'broken',
+            'defective',
+            'damaged',
+            'not working',
+            'doesn\'t work',
+            'poor quality',
+            'disappointed',
+            'terrible',
+            'awful',
+            'worst',
+            'complaint',
+            'refund',
+            'return',
+            'exchange',
+            'frustrated',
+            'angry',
+            'unhappy',
+            'dissatisfied',
+            'issue',
+            'problem',
+            'shipping',
+            'delivery',
+            'late',
+        ];
+
+        return CustomerComplaint::where('created_at', '>=', $startDate)
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get(['message', 'created_at'])
+            ->map(function ($complaint) {
+                return [
+                    'message' => $complaint->message,
+                    'date' => $complaint->created_at,
+                ];
+            });
+    }
+
+    private function extractProductMentions(string $content, $products)
+    {
+        $contentLower = strtolower($content);
+        $found = [];
+
+        foreach ($products as $product) {
+            $name = strtolower($product->name);
+            $sku = strtolower($product->sku);
+
+            if (str_contains($contentLower, $name) || str_contains($contentLower, $sku)) {
+                $found[$product->id] = [
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                ];
+            }
+        }
+
+        return $found;
+    }
+
+    private function messageContainsKeywords(string $content, array $keywords)
+    {
+        $contentLower = strtolower($content);
+
+        foreach ($keywords as $keyword) {
+            if (str_contains($contentLower, $keyword)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function topSellingProducts()

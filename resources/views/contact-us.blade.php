@@ -58,13 +58,43 @@
 
                 <div>
                     <h2 class="text-2xl font-bold mb-6">Send Us a Message</h2>
-                    <form action="#" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="text" placeholder="Name" class="contact-input">
-                            <input type="email" placeholder="Email" class="contact-input">
+
+                    @if(session('success'))
+                        <div class="rounded-xl border border-green-500/30 bg-green-500/10 p-4 mb-4 text-green-100">
+                            {{ session('success') }}
                         </div>
-                        <input type="text" placeholder="Subject" class="contact-input">
-                        <textarea placeholder="Message" rows="5" class="contact-input resize-none"></textarea>
+                    @endif
+                    @if(session('error'))
+                        <div class="rounded-xl border border-red-500/30 bg-red-500/10 p-4 mb-4 text-red-100">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    <div id="contact-form-message" class="hidden rounded-xl p-4 mb-4 text-sm"></div>
+
+                    <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="space-y-4">
+                        @csrf
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="name" placeholder="Name" value="{{ old('name') }}"
+                                class="contact-input">
+                            <input type="email" name="email" placeholder="Email" value="{{ old('email') }}"
+                                class="contact-input">
+                        </div>
+                        <input type="text" name="subject" placeholder="Subject" value="{{ old('subject') }}"
+                            class="contact-input">
+                        <textarea name="message" placeholder="Message" rows="5"
+                            class="contact-input resize-none">{{ old('message') }}</textarea>
+
+                        @if ($errors->any())
+                            <div class="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-100">
+                                <ul class="list-disc pl-5 text-sm">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
 
                         <button type="submit"
                             class="w-full bg-[#f3863c] hover:bg-[#e0752d] text-white font-bold py-4 rounded-xl transition-all shadow-lg">
@@ -73,7 +103,56 @@
                     </form>
                 </div>
 
-            </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const form = document.getElementById('contact-form');
+                        const messageBox = document.getElementById('contact-form-message');
+
+                        if (!form || !messageBox) {
+                            return;
+                        }
+
+                        form.addEventListener('submit', async function (event) {
+                            event.preventDefault();
+
+                            messageBox.classList.add('hidden');
+                            messageBox.innerHTML = '';
+
+                            const formData = new FormData(form);
+                            const token = document.querySelector('input[name="_token"]').value;
+
+                            try {
+                                const response = await fetch(form.action, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': token,
+                                        'Accept': 'application/json',
+                                    },
+                                    body: formData,
+                                });
+
+                                const data = await response.json();
+
+                                if (!response.ok) {
+                                    const errors = data.errors ? Object.values(data.errors).flat() : [data.message || 'Unable to submit message.'];
+                                    messageBox.className = 'rounded-xl border border-red-500/30 bg-red-500/10 p-4 mb-4 text-red-100';
+                                    messageBox.innerHTML = '<ul class="list-disc pl-5 text-sm">' + errors.map(err => '<li>' + err + '</li>').join('') + '</ul>';
+                                    messageBox.classList.remove('hidden');
+                                    return;
+                                }
+
+                                messageBox.className = 'rounded-xl border border-green-500/30 bg-green-500/10 p-4 mb-4 text-green-100';
+                                messageBox.textContent = data.message || 'Thank you! Your message has been received.';
+                                messageBox.classList.remove('hidden');
+                                form.reset();
+                            } catch (error) {
+                                messageBox.className = 'rounded-xl border border-red-500/30 bg-red-500/10 p-4 mb-4 text-red-100';
+                                messageBox.textContent = 'There was an error submitting the form. Please try again.';
+                                messageBox.classList.remove('hidden');
+                            }
+                        });
+                    });
+                </script>
         </section>
     </div>
 @endsection
