@@ -17,14 +17,13 @@ class ProductForm extends Component
     // Form Fields
     public $name = '';
     public $sku = '';
-    public $category = 'supplements';
     public $price = '';
     public $stock = 0;
     public $description = '';
     public $image; // Temporary file for upload
     public $existingImage; // Current image path
     public $categories; // For the dropdown
-    public $category_id; // To store the selected ID
+    public $category_id = null; // To store the selected ID
 
     public function mount(?Product $product = null)
     {
@@ -35,7 +34,6 @@ class ProductForm extends Component
             $this->product = $product;
             $this->name = $product->name;
             $this->sku = $product->sku;
-            $this->category = $product->category;
             $this->price = $product->price;
             $this->stock = $product->stock;
             $this->description = $product->description;

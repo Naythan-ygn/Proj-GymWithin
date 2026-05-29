@@ -31,7 +31,7 @@ class ProductIndex extends Component
     public function showPreview($id)
     {
         $this->selectedProduct = Product::find($id);
-        $this->modal('product-preview-drawer')->show();
+        $this->dispatch('modal-show', name: 'product-preview-drawer');
     }
 
     public function confirmDelete($id)

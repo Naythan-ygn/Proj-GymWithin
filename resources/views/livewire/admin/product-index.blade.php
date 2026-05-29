@@ -136,7 +136,7 @@
             <div class="space-y-8 p-4">
                 <div
                     class="aspect-square w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-                    <img src="{{ $selectedProduct->image_url ?? 'https://placehold.co/400' }}" alt=""
+                    <img src="{{ $selectedProduct->image_path ? Storage::url($selectedProduct->image_path) : 'https://placehold.co/400' }}" alt=""
                         class="object-cover size-full">
                 </div>
 

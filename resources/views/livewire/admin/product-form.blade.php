@@ -19,10 +19,10 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <flux:input wire:model="sku" label="SKU / Barcode" placeholder="GW-PRO-001" />
-                        <flux:select wire:model="category" label="Category">
+                        <flux:select wire:model="category_id" label="Category">
                             <flux:select.option value="">Select Category</flux:select.option>
                             @foreach(\App\Models\Category::all() as $cat)
-                                <flux:select.option value="{{ $cat->slug }}">{{ $cat->name }}</flux:select.option>
+                                <flux:select.option value="{{ $cat->id }}">{{ $cat->name }}</flux:select.option>
                             @endforeach
                         </flux:select>
                     </div>
