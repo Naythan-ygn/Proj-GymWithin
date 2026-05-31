@@ -4,7 +4,6 @@ namespace App\Livewire\User;
 
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -17,8 +16,8 @@ class OrderHistory extends Component
 {
     use WithPagination;
 
-    public $selectedOrderId = null; // Store just the ID
-    public $selectedOrder = null; // Store the loaded Order model for the modal
+    public $selectedOrderId = null;
+    public $selectedOrder = null;
     public $paymentToasts = [];
 
     public function mount(): void
@@ -47,11 +46,15 @@ class OrderHistory extends Component
         }
     }
 
-    public function showOrder($id)
+    public function showOrder(int $id): void
     {
-        $this->selectedOrderId = $id;
-        $this->selectedOrder = Order::with(['items.product', 'transaction'])->find($id);
+        $order = Order::query()
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
+
+        $this->selectedOrderId = $order->id;
     }
+
     public function closeOrder()
     {
         $this->selectedOrderId = null;
@@ -65,6 +68,12 @@ class OrderHistory extends Component
                 ->with('transaction')
                 ->latest()
                 ->paginate(5),
+            'selectedOrder' => $this->selectedOrderId
+                ? Order::query()
+                    ->where('user_id', Auth::id())
+                    ->with(['items.product', 'transaction'])
+                    ->find($this->selectedOrderId)
+                : null,
         ]);
     }
 }

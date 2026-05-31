@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <div class="container mx-auto mt-12 px-4 maxg-w-5xl">
+    <div class="container mx-auto mt-12 px-4 max-w-5xl">
         <header class="mb-12">
             <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight">
                 My <span class="text-orange-500">Orders</span>
@@ -35,8 +35,10 @@
 
         <div class="space-y-6">
             @forelse ($orders as $order)
-                <div class="glass-panel p-6 md:p-8 rounded-3xl border border-white/10 hover:border-orange-500/30 transition-all duration-300 group cursor-pointer shadow-xl"
-                    wire:click="showOrder({{ $order->id }})" wire:key="order-{{ $order->id }}">
+                <button type="button"
+                    class="glass-panel w-full text-left p-6 md:p-8 rounded-3xl border border-white/10 hover:border-orange-500/30 focus:outline-none focus:ring-2 focus:ring-orange-500/70 transition-all duration-300 group cursor-pointer shadow-xl"
+                    wire:click="showOrder({{ $order->id }})" wire:key="order-{{ $order->id }}"
+                    aria-label="Preview details for order {{ $order->order_number }}">
 
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="flex items-center gap-6">
@@ -65,13 +67,13 @@
                                     {{ ucfirst($order->payment_status) }}
                                 </span>
                             </div>
-                            <div
-                                class="size-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-orange-500 transition-all">
-                                <i class="fas fa-chevron-right text-sm text-zinc-400 group-hover:text-white"></i>
+                            <div class="hidden sm:inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-300 group-hover:bg-orange-500 group-hover:text-white transition-all">
+                                <i class="fas fa-eye text-sm"></i>
+                                Preview
                             </div>
                         </div>
                     </div>
-                </div>
+                </button>
             @empty
                 <div class="text-center py-20 border border-dashed border-white/10 rounded-[3rem]">
                     <p class="text-zinc-500">No orders found.</p>
@@ -85,12 +87,13 @@
     </div>
 
     {{-- Modal Overlay --}}
-    @if ($this->selectedOrder)
-        <div x-data="{ show: true }" x-init="$watch('show', value => { if (!value) $wire.set('selectedOrder', null) })"
+    @if ($selectedOrder)
+        <div x-data="{ show: true, close() { this.show = false; setTimeout(() => $wire.closeOrder(), 200) } }"
+            x-on:keydown.escape.window="close()"
             class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
 
             {{-- 1. Dark Backdrop --}}
-            <div class="absolute inset-0 bg-black/90 backdrop-blur-md" x-on:click="show = false">
+            <div class="absolute inset-0 bg-black/90 backdrop-blur-md" x-on:click="close()">
             </div>
 
             {{-- 2. Modal Container --}}
@@ -101,10 +104,10 @@
                 {{-- Header --}}
                 <div class="p-8 pb-4 flex justify-between items-start">
                     <div>
-                        <h2 class="text-2xl font-black text-white">Order Details</h2>
-                        <p class="text-orange-500 font-bold">#{{ $this->selectedOrder->order_number }}</p>
+                        <h2 class="text-2xl font-black text-white">Order Preview</h2>
+                        <p class="text-orange-500 font-bold">#{{ $selectedOrder->order_number }}</p>
                     </div>
-                    <button type="button" x-on:click="show = false"
+                    <button type="button" x-on:click="close()"
                         class="size-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-orange-500 transition-colors group cursor-pointer">
                         <i class="fas fa-times text-zinc-400 group-hover:text-white"></i>
                     </button>
@@ -113,16 +116,18 @@
                 {{-- Body --}}
                 <div class="p-8 pt-0 overflow-y-auto custom-scrollbar">
                     <div class="space-y-4">
-                        @foreach ($this->selectedOrder->items as $item)
+                        @foreach ($selectedOrder->items as $item)
                             <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-                                <div
-                                    class="size-12 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-500 text-xs">
-                                    IMG
+                                <div class="size-14 shrink-0 overflow-hidden rounded-xl bg-zinc-800 border border-white/10">
+                                    <img src="{{ $item->product?->image_path ? asset('storage/' . $item->product->image_path) : 'https://placehold.co/120?text=No+Image' }}"
+                                        alt="{{ $item->product?->name ?? 'Product image' }}"
+                                        class="size-full object-cover">
                                 </div>
                                 <div class="flex-1">
                                     <h4 class="font-bold text-white text-sm">{{ $item->product->name ?? 'Product' }}
                                     </h4>
-                                    <p class="text-zinc-500 text-xs">Qty: {{ $item->quantity }}</p>
+                                    <p class="text-zinc-500 text-xs">Qty: {{ $item->quantity }} x
+                                        ${{ number_format($item->price, 2) }}</p>
                                 </div>
                                 <div class="text-right font-bold text-white text-sm">
                                     ${{ number_format($item->price * $item->quantity, 2) }}
@@ -132,28 +137,45 @@
                     </div>
 
                     <div class="mt-8 pt-6 border-t border-white/10">
+                        <div class="mb-4 grid gap-4 sm:grid-cols-2">
+                            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                <p class="mb-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Order Date
+                                </p>
+                                <p class="text-sm text-white">{{ $selectedOrder->created_at->format('F d, Y') }}</p>
+                            </div>
+                            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                <p class="mb-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Order Status
+                                </p>
+                                <p class="text-sm font-semibold text-white">{{ ucfirst($selectedOrder->status) }}</p>
+                            </div>
+                        </div>
+                        <div class="mb-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+                            <p class="mb-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Shipping Address</p>
+                            <p class="text-sm leading-relaxed text-zinc-300">
+                                {{ $selectedOrder->shipping_address ?: 'No shipping address provided.' }}</p>
+                        </div>
                         <div class="mb-4 flex items-center justify-between">
                             <span class="text-zinc-400">Payment Status</span>
                             <span
-                                class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $this->selectedOrder->payment_status === 'approved' ? 'bg-green-500/15 text-green-300' : ($this->selectedOrder->payment_status === 'rejected' ? 'bg-red-500/15 text-red-300' : 'bg-amber-500/15 text-amber-300') }}">
-                                {{ ucfirst($this->selectedOrder->payment_status) }}
+                                class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $selectedOrder->payment_status === 'approved' ? 'bg-green-500/15 text-green-300' : ($selectedOrder->payment_status === 'rejected' ? 'bg-red-500/15 text-red-300' : 'bg-amber-500/15 text-amber-300') }}">
+                                {{ ucfirst($selectedOrder->payment_status) }}
                             </span>
                         </div>
-                        @if ($this->selectedOrder->payment_notes)
+                        @if ($selectedOrder->payment_notes)
                             <div class="mb-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-zinc-300">
-                                {{ $this->selectedOrder->payment_notes }}
+                                {{ $selectedOrder->payment_notes }}
                             </div>
                         @endif
                         <div class="flex justify-between text-white text-xl font-black">
                             <span>Total Paid</span>
-                            <span class="text-orange-500">${{ number_format($this->selectedOrder->total_price, 2) }}</span>
+                            <span class="text-orange-500">${{ number_format($selectedOrder->total_price, 2) }}</span>
                         </div>
                     </div>
                 </div>
 
                 {{-- Footer --}}
                 <div class="p-8 pt-0">
-                    <button type="button" x-on:click="show = false"
+                    <button type="button" x-on:click="close()"
                         class="w-full py-4 bg-white/5 border border-white/10 rounded-xl font-bold hover:bg-white/10 transition-all text-white cursor-pointer">
                         Back to Orders
                     </button>
